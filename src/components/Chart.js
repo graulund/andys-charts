@@ -3,8 +3,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { path } from "d3-path";
 
-import { maxPlays, padChartData } from "./lib/chartData";
-import { ymFromDate } from "./lib/time";
+import { maxPlays, padChartData } from "../lib/chartData";
+import { ymFromDate } from "../lib/time";
 
 const chartWidth = 1000;
 const chartHeight = 145;

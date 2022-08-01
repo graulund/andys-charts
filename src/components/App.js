@@ -1,9 +1,9 @@
 import "./App.css";
 
 import Chart from "./Chart";
-import dataSoldier from "./Soldier.json";
-import dataTiger from "./Tiger.json";
-import dataWeirdo from "./Weirdo.json";
+import dataSoldier from "../data/Soldier.json";
+import dataTiger from "../data/Tiger.json";
+import dataWeirdo from "../data/Weirdo.json";
 
 function App() {
 	// eslint-disable-next-line no-restricted-globals
