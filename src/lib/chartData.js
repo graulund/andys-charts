@@ -8,10 +8,16 @@ function emptyChartDataItem(date) {
 	return chartDataItem(date, 0);
 }
 
-export function padChartData(data, maxDays = 183, minDays = 10, maxEndPaddingDays = 5) {
+export function padChartData(data, options) {
 	if (!data?.length) {
 		return [];
 	}
+
+	const {
+		maxDays = 183,
+		minDays = 10,
+		maxEndPaddingDays = 5
+	} = options || {};
 
 	let out = [];
 	// TODO: Define "now yesterday" in a custom way

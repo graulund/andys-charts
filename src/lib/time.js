@@ -1,3 +1,37 @@
+const monthNames = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
+];
+
+const monthNamesShort = monthNames.map((name) => name.slice(0, 3));
+
+const monthNamesDanish = [
+	"januar",
+	"februar",
+	"marts",
+	"april",
+	"maj",
+	"juni",
+	"juli",
+	"august",
+	"september",
+	"oktober",
+	"november",
+	"december"
+];
+
+const monthNamesDanishShort = monthNamesDanish.map((name) => name.slice(0, 3));
+
 export function dateFromYmd(ymd) {
 	// return new Date(`${ymd} 00:00:00`);
 	return new Date(ymd);
@@ -54,4 +88,82 @@ export function nextDay(time) {
 
 export function prevDay(time) {
 	return offsetDate(time, -1);
+}
+
+export function daysBetweenDates(startDate, endDate) {
+	// dates must be two js Date objects
+	const msDiff = Math.abs(endDate - startDate);
+	return Math.round(msDiff / 86400000);
+}
+
+export function getAllMonthsBetweenDates(firstDateString, lastDateString) {
+	// dates must be yyyy-mm-dd strings
+	const firstDate = dateFromYmd(firstDateString);
+	const lastDate = dateFromYmd(lastDateString);
+	const ymStrings = [ymFromDate(firstDate)];
+	let current = nextDay(firstDate);
+
+	while (current <= lastDate) {
+		const ym = ymFromDate(current);
+
+		if (!ymStrings.includes(ym)) {
+			ymStrings.push(ym);
+		}
+
+		current = nextDay(current);
+	}
+
+	return ymStrings.map((ym) => {
+		const year = parseInt(ym.slice(0, 4), 10);
+		const month = parseInt(ym.slice(5, 7), 10);
+
+		return { year, month, ymd: `${ym}-01` };
+	});
+}
+
+export function formatYearMonth(year, month, prevYear = 0, language = "en", size = "normal") {
+	// language is "en" or "da"
+	// size is "normal", "small", or "tiny"
+	// normal: long month names, followed by year if different from prev year
+	// small: short month names, followed by year if different from prev year
+	// tiny: year if different from prev year, otherwise short month names
+
+	let monthNamesList = null;
+
+	switch (language) {
+		case "da":
+			if (size === "normal") {
+				monthNamesList = monthNamesDanish;
+			} else {
+				monthNamesList = monthNamesDanishShort;
+			}
+			break;
+		case "en":
+		default:
+			if (size === "normal") {
+				monthNamesList = monthNames;
+			} else {
+				monthNamesList = monthNamesShort;
+			}
+			break;
+	}
+
+	const monthName = monthNamesList[month - 1];
+
+	switch (size) {
+		case "normal":
+		case "small":
+		default:
+			if (year !== prevYear) {
+				return monthName + " " + year;
+			}
+
+			return monthName;
+		case "tiny":
+			if (year !== prevYear) {
+				return year;
+			}
+
+			return monthName;
+	}
 }

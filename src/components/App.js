@@ -19,7 +19,7 @@ function App() {
 
 	return (
 		<div className="App">
-			<Chart data={data} />
+			<Chart dataItems={[data]} />
 		</div>
 	);
 }

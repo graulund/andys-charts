@@ -1,62 +1,75 @@
 import "./Chart.css";
 import React from "react";
 import PropTypes from "prop-types";
-import { path } from "d3-path";
 
+import ChartItem from "./ChartItem";
+import ChartTimeAxis from "./ChartTimeAxis";
+import ChartValueAxis from "./ChartValueAxis";
 import { maxPlays, padChartData } from "../lib/chartData";
-import { ymFromDate } from "../lib/time";
 
 const chartWidth = 1000;
 const chartHeight = 145;
 const minMaxPlays = 4;
+const chartTopHeight = 4;
+const chartBottomHeight = 14;
+const chartLeftWidth = 18;
+const mainAreaWidth = chartWidth - chartLeftWidth;
+const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
 
-function Chart({ data }) {
-	if (!data?.length) {
+function Chart({ dataItems }) {
+	if (!dataItems?.length) {
 		return null;
 	}
 
-	const displayData = padChartData(data);
-	const numDays = displayData.length;
-	const max = Math.max(minMaxPlays, maxPlays(displayData));
-	const months = new Set();
+	const displayItems = dataItems.map((data) => padChartData(data));
+	const maxValues = displayItems.map((list) => maxPlays(list));
+	const maxValue = Math.max(minMaxPlays, ...maxValues);
 
-	const p = path();
-	p.moveTo(0, chartHeight);
+	const firstDataset = displayItems[0];
+	const firstDate = firstDataset[0]?.date;
+	const lastDate = firstDataset[firstDataset.length - 1]?.date;
 
-	displayData.forEach(({ date, plays }, index) => {
-		// Months
-		months.add(ymFromDate(date));
-
-		// Path
-		const percY = (max - plays) / max;
-		const y = percY * chartHeight;
-		const percX = index / numDays;
-		const x = percX * chartWidth;
-
-		p.lineTo(x, y);
-	});
-
-	console.log("months", months);
-
-	const linePath = p.toString();
-	p.closePath();
-	const areaPath = p.toString();
+	if (!firstDate || !lastDate) {
+		return null;
+	}
 
 	return (
 		<div className="chart">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
-				<path d={areaPath} fill="#84e4d9" />
-				<path d={linePath} strokeWidth="2" stroke="#3faa9e" fill="transparent" />
+			<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+				<ChartValueAxis
+					maxValue={maxValue}
+					offsetLeft={chartLeftWidth}
+					offsetTop={chartTopHeight}
+					areaHeight={mainAreaHeight}
+				/>
+				<ChartTimeAxis
+					firstDate={firstDate}
+					lastDate={lastDate}
+					offsetLeft={chartLeftWidth}
+					offsetTop={chartTopHeight}
+					areaWidth={mainAreaWidth}
+					areaHeight={mainAreaHeight}
+				/>
+				{ displayItems.map((data, i) => {
+					return (
+						<ChartItem
+							data={data}
+							maxValue={maxValue}
+							offsetLeft={chartLeftWidth}
+							offsetTop={chartTopHeight}
+							areaWidth={mainAreaWidth}
+							areaHeight={mainAreaHeight}
+							key={i}
+						/>
+					);
+				}) }
 			</svg>
 		</div>
 	);
 }
 
 Chart.propTypes = {
-	data: PropTypes.arrayOf(PropTypes.shape({
-		date: PropTypes.string,
-		plays: PropTypes.number
-	})).isRequired
+	dataItems: PropTypes.array.isRequired
 };
 
 export default Chart;

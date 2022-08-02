@@ -1,0 +1,16 @@
+.axisLine {
+	stroke: #ccc;
+	shape-rendering: crispEdges;
+	fill: none;
+}
+
+.axisText {
+	fill: #aaa;
+	font-size: 11px;
+}
+
+.axisValueText {
+	fill: #aaa;
+	font-size: 11px;
+	text-anchor: end;
+}
