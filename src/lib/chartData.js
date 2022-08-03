@@ -2,6 +2,7 @@ import {
 	dateFromYmd,
 	ymdFromDate,
 	offsetDate,
+	prevDay,
 	nextDay,
 	todayDate
 } from "./time";
@@ -57,13 +58,14 @@ export function padChartDataPointLists(dataPointLists, options) {
 		return extreme;
 	}, null);
 
+	const earliestDateWithPadding = prevDay(earliestDate);
 	const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
 	const endDate = new Date(Math.min(latestDateWithPadding, today));
 
 	const minDaysAgo = offsetDate(endDate, -1 * minDays);
 	const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
 
-	const startDate = new Date(Math.min(minDaysAgo, Math.max(maxDaysAgo, earliestDate)));
+	const startDate = new Date(Math.min(minDaysAgo, Math.max(maxDaysAgo, earliestDateWithPadding)));
 
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))
