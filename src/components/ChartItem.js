@@ -2,8 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import { path } from "d3-path";
 
-import { ymFromDate } from "../lib/time";
-
 import styles from "./ChartItem.module.css";
 
 function ChartItem({
@@ -21,7 +19,6 @@ function ChartItem({
 	// Data is assumed to be padded here!
 
 	const numDays = data.length;
-	const months = new Set();
 
 	const p = path();
 	p.moveTo(offsetLeft, offsetTop + areaHeight);
@@ -33,10 +30,6 @@ function ChartItem({
 	*/
 
 	data.forEach(({ date, plays }, index) => {
-		// Months
-		months.add(ymFromDate(date));
-
-		// Path
 		const percY = (maxValue - plays) / maxValue;
 		const y = offsetTop + percY * areaHeight;
 		const percX = index / (numDays - 1);
@@ -46,8 +39,6 @@ function ChartItem({
 
 		p.lineTo(x, y);
 	});
-
-	console.log("months", months);
 
 	const linePath = p.toString();
 	p.closePath();

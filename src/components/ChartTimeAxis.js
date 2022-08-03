@@ -49,7 +49,7 @@ function ChartTimeAxis({
 				const label = formatYearMonth(year, month, prevMonth?.year || 0, "da");
 
 				return (
-					<>
+					<React.Fragment key={ymd}>
 						<path className={styles.axisLine} d={tickPath.toString()} />
 						<text
 							className={styles.axisText}
@@ -58,7 +58,7 @@ function ChartTimeAxis({
 						>
 							{ label }
 						</text>
-					</>
+					</React.Fragment>
 				);
 			}) }
 		</>
