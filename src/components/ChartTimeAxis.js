@@ -26,11 +26,19 @@ function ChartTimeAxis({
 	axisPath.moveTo(offsetLeft, offsetTop + areaHeight);
 	axisPath.lineTo(offsetLeft + areaWidth, offsetTop + areaHeight);
 
-	const months = getAllMonthsBetweenDates(firstDate, lastDate);
-
 	const start = dateFromYmd(firstDate);
 	const end = dateFromYmd(lastDate);
 	const totalDays = daysBetweenDates(start, end);
+
+	const months = getAllMonthsBetweenDates(firstDate, lastDate);
+	const monthCount = months.length;
+	let monthFormatStyle = "normal";
+
+	if (monthCount >= 20) {
+		monthFormatStyle = "tiny";
+	} else if (monthCount >= 12) {
+		monthFormatStyle = "small";
+	}
 
 	return (
 		<>
@@ -46,7 +54,10 @@ function ChartTimeAxis({
 				tickPath.lineTo(tickPos, offsetTop + areaHeight);
 
 				const prevMonth = months[index - 1];
-				const label = formatYearMonth(year, month, prevMonth?.year || 0, "da");
+
+				const label = formatYearMonth(
+					year, month, prevMonth?.year || 0, "da", monthFormatStyle
+				);
 
 				return (
 					<React.Fragment key={ymd}>

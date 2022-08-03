@@ -121,9 +121,9 @@ export function getAllMonthsBetweenDates(firstDateString, lastDateString) {
 	});
 }
 
-export function formatYearMonth(year, month, prevYear = 0, language = "en", size = "normal") {
+export function formatYearMonth(year, month, prevYear = 0, language = "en", style = "normal") {
 	// language is "en" or "da"
-	// size is "normal", "small", or "tiny"
+	// style is "normal", "small", or "tiny"
 	// normal: long month names, followed by year if different from prev year
 	// small: short month names, followed by year if different from prev year
 	// tiny: year if different from prev year, otherwise short month names
@@ -132,7 +132,7 @@ export function formatYearMonth(year, month, prevYear = 0, language = "en", size
 
 	switch (language) {
 		case "da":
-			if (size === "normal") {
+			if (style === "normal") {
 				monthNamesList = monthNamesDanish;
 			} else {
 				monthNamesList = monthNamesDanishShort;
@@ -140,7 +140,7 @@ export function formatYearMonth(year, month, prevYear = 0, language = "en", size
 			break;
 		case "en":
 		default:
-			if (size === "normal") {
+			if (style === "normal") {
 				monthNamesList = monthNames;
 			} else {
 				monthNamesList = monthNamesShort;
@@ -150,7 +150,7 @@ export function formatYearMonth(year, month, prevYear = 0, language = "en", size
 
 	const monthName = monthNamesList[month - 1];
 
-	switch (size) {
+	switch (style) {
 		case "normal":
 		case "small":
 		default:
