@@ -17,9 +17,11 @@ function App() {
 		data = dataTiger;
 	}
 
+	const listWithAll = [dataWeirdo, dataSoldier, dataTiger];
+
 	return (
 		<div className="App">
-			<Chart dataItems={[data]} />
+			<Chart dataPointLists={listWithAll} />
 		</div>
 	);
 }

@@ -59,6 +59,8 @@ function ChartTimeAxis({
 					year, month, prevMonth?.year || 0, "da", monthFormatStyle
 				);
 
+				// TODO: Somehow detect if there's not space for the label?
+
 				return (
 					<React.Fragment key={ymd}>
 						<path className={styles.axisLine} d={tickPath.toString()} />

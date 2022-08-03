@@ -2,10 +2,10 @@ import "./Chart.css";
 import React from "react";
 import PropTypes from "prop-types";
 
-import ChartItem from "./ChartItem";
+import ChartDataPoints from "./ChartDataPoints";
 import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
-import { maxPlays, padChartData } from "../lib/chartData";
+import { maxPlays, padChartDataPointLists } from "../lib/chartData";
 
 const chartWidth = 1000;
 const chartHeight = 145;
@@ -16,16 +16,16 @@ const chartLeftWidth = 18;
 const mainAreaWidth = chartWidth - chartLeftWidth;
 const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
 
-function Chart({ dataItems }) {
-	if (!dataItems?.length) {
+function Chart({ dataPointLists }) {
+	if (!dataPointLists?.length) {
 		return null;
 	}
 
-	const displayItems = dataItems.map((data) => padChartData(data));
-	const maxValues = displayItems.map((list) => maxPlays(list));
+	const displayLists = padChartDataPointLists(dataPointLists);
+	const maxValues = displayLists.map((list) => maxPlays(list));
 	const maxValue = Math.max(minMaxPlays, ...maxValues);
 
-	const firstDataset = displayItems[0];
+	const firstDataset = displayLists[0];
 	const firstDate = firstDataset[0]?.date;
 	const lastDate = firstDataset[firstDataset.length - 1]?.date;
 
@@ -50,10 +50,10 @@ function Chart({ dataItems }) {
 					areaWidth={mainAreaWidth}
 					areaHeight={mainAreaHeight}
 				/>
-				{ displayItems.map((data, i) => {
+				{ displayLists.map((dataPoints, i) => {
 					return (
-						<ChartItem
-							data={data}
+						<ChartDataPoints
+							dataPoints={dataPoints}
 							maxValue={maxValue}
 							offsetLeft={chartLeftWidth}
 							offsetTop={chartTopHeight}
@@ -69,7 +69,7 @@ function Chart({ dataItems }) {
 }
 
 Chart.propTypes = {
-	dataItems: PropTypes.array.isRequired
+	dataPointLists: PropTypes.array.isRequired
 };
 
 export default Chart;

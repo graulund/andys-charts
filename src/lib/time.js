@@ -32,9 +32,17 @@ const monthNamesDanish = [
 
 const monthNamesDanishShort = monthNamesDanish.map((name) => name.slice(0, 3));
 
+function pad(num) {
+	if (num < 10) {
+		return `0${num}`;
+	}
+
+	return num;
+}
+
 export function dateFromYmd(ymd) {
-	// return new Date(`${ymd} 00:00:00`);
-	return new Date(ymd);
+	return new Date(`${ymd} 00:00:00`);
+	// return new Date(ymd);
 }
 
 export function ymdFromDate(date) {
@@ -42,7 +50,11 @@ export function ymdFromDate(date) {
 		return date;
 	}
 
-	return date.toISOString().slice(0, 10);
+	const y = date.getFullYear();
+	const m = pad(1 + date.getMonth());
+	const d = pad(date.getDate());
+
+	return `${y}-${m}-${d}`;
 }
 
 export function ymFromDate(date) {
@@ -51,9 +63,13 @@ export function ymFromDate(date) {
 	return dateString.slice(0, 7);
 }
 
-export function todayDate() {
+export function dateWithoutTime(date) {
 	// This converts it to UTC midnight
-	return dateFromYmd(ymdFromDate(new Date()));
+	return dateFromYmd(ymdFromDate(date));
+}
+
+export function todayDate() {
+	return dateWithoutTime(new Date());
 }
 
 function getDateFromTime(time) {
@@ -68,8 +84,16 @@ function getDateFromTime(time) {
 	return new Date();
 }
 
-export function offsetDate(time, daysOffset) {
+export function offsetDate(time, daysOffset, includeHours = false) {
 	const date = getDateFromTime(time);
+
+	if (!includeHours) {
+		return new Date(
+			date.getFullYear(),
+			date.getMonth(),
+			date.getDate() + daysOffset
+		);
+	}
 
 	return new Date(
 		date.getFullYear(),

@@ -1,10 +1,10 @@
-.itemArea {
+.area {
 	/* fill: #84e4d9; */
 	fill: #3faa9e;
 	opacity: .5;
 }
 
-.itemLine {
+.line {
 	stroke-width: 2;
 	stroke: #3faa9e;
 	fill: none;
