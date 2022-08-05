@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import ChartContext from "./ChartContext";
 import ChartDataPoints from "./ChartDataPoints";
 import ChartHighlightInfo from "./ChartHighlightInfo";
+import ChartLegend from "./ChartLegend";
 import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
 import ChartValueZones from "./ChartValueZones";
@@ -34,6 +35,7 @@ const colors = [
 
 function Chart({ tracks }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
+	const [highlightedIndex, setHighlightedIndex] = useState(null);
 	const dataPointLists = (tracks || []).map(({ dataPoints }) => dataPoints);
 	const displayLists = padChartDataPointLists(dataPointLists);
 	const maxValues = displayLists.map((list) => maxPlays(list));
@@ -54,7 +56,9 @@ function Chart({ tracks }) {
 		mainAreaWidth,
 		minValue: 0,
 		maxValue,
+		highlightedIndex,
 		highlightedValueKey,
+		setHighlightedIndex,
 		setHighlightedValueKey
 	}), [
 		chartLeftWidth,
@@ -64,7 +68,9 @@ function Chart({ tracks }) {
 		mainAreaHeight,
 		mainAreaWidth,
 		maxValue,
+		highlightedIndex,
 		highlightedValueKey,
+		setHighlightedIndex,
 		setHighlightedValueKey
 	]);
 
@@ -88,7 +94,23 @@ function Chart({ tracks }) {
 	}
 
 	const isSingle = tracks.length === 1;
-	displayLists.reverse();
+
+	const displayData = displayLists.map((dataPoints, i) => ({
+		color: isSingle ? singleColor : colors[i % colors.length],
+		dataPoints,
+		index: i
+	}));
+
+	// Reverse because the first in the list needs to be at the top,
+	// and in SVGs, the last drawn item is topmost
+	displayData.reverse();
+
+	const legendList = tracks.map(({ title, url }, i) => ({
+		color: isSingle ? singleColor : colors[i % colors.length],
+		index: i,
+		title,
+		url
+	}));
 
 	return (
 		<div className={styles.chart}>
@@ -96,19 +118,18 @@ function Chart({ tracks }) {
 				<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
 					<ChartValueAxis />
 					<ChartTimeAxis />
-					{ displayLists.map((dataPoints, i) => {
-						const color = isSingle ? singleColor : colors[i % colors.length];
-						return (
-							<ChartDataPoints
-								dataPoints={dataPoints}
-								color={color}
-								key={i}
-							/>
-						);
-					}) }
+					{ displayData.map(({ color, dataPoints, index }) => (
+						<ChartDataPoints
+							dataPoints={dataPoints}
+							color={color}
+							index={index}
+							key={index}
+						/>
+					)) }
 				</svg>
 				<ChartValueZones values={values} />
 				<ChartHighlightInfo isSingle={isSingle} value={highlightedValue} />
+				<ChartLegend tracks={legendList} />
 			</ChartContext.Provider>
 		</div>
 	);
@@ -117,6 +138,7 @@ function Chart({ tracks }) {
 Chart.propTypes = {
 	tracks: PropTypes.arrayOf(PropTypes.shape({
 		title: PropTypes.string,
+		url: PropTypes.string,
 		dataPoints: PropTypes.array
 	})).isRequired
 };

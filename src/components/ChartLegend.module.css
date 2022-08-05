@@ -1,0 +1,29 @@
+.legend {
+	margin: 0 40px 10px;
+	font-size: .75rem;
+	line-height: 1.6em;
+	text-align: center;
+}
+
+.list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.listItem {
+	display: inline;
+	margin: 0 1.5em 0 0;
+}
+
+.item {
+	border-left: 1em solid #333;
+	padding-left: 0.5em;
+	white-space: nowrap;
+	color: #888;
+	text-decoration: none;
+}
+
+.item:hover {
+	text-decoration: underline;
+}

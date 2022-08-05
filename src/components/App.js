@@ -20,9 +20,9 @@ function App() {
 	const listWithAll = [dataWeirdo, dataSoldier, dataTiger];
 
 	const tracks = [
-		{ title: "Weirdo", dataPoints: dataWeirdo },
-		{ title: "Soldier", dataPoints: dataSoldier },
-		{ title: "Tiger", dataPoints: dataTiger },
+		{ title: "Weirdo", url: "http://example.com/", dataPoints: dataWeirdo },
+		{ title: "Soldier", url: "http://example.com/", dataPoints: dataSoldier },
+		{ title: "Tiger", url: "http://example.com/", dataPoints: dataTiger },
 	];
 
 	return (

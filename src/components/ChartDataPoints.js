@@ -6,10 +6,11 @@ import ChartContext from "./ChartContext";
 
 import styles from "./ChartDataPoints.module.css";
 
-function ChartDataPoints({ color, dataPoints }) {
+function ChartDataPoints({ color, dataPoints, index }) {
 	const {
 		chartLeftWidth: offsetLeft,
 		chartTopHeight: offsetTop,
+		highlightedIndex,
 		mainAreaWidth,
 		mainAreaHeight,
 		maxValue
@@ -45,11 +46,16 @@ function ChartDataPoints({ color, dataPoints }) {
 	p.lineTo(offsetLeft, offsetTop + mainAreaHeight);
 	p.closePath();
 	const areaPath = p.toString();
+	const faded = typeof highlightedIndex === "number" && highlightedIndex !== index;
+
+	const areaClassName = faded ? [styles.area, styles.fadedArea].join(" ") : styles.area;
+	const lineClassName = faded ? [styles.line, styles.fadedLine].join(" ") : styles.line;
+	const colorAttr = faded ? undefined : color;
 
 	return (
 		<>
-			<path className={styles.area} d={areaPath} fill={color} />
-			<path className={styles.line} d={linePath} stroke={color} />
+			<path className={areaClassName} d={areaPath} fill={colorAttr} />
+			<path className={lineClassName} d={linePath} stroke={colorAttr} />
 		</>
 	);
 }
@@ -59,7 +65,8 @@ ChartDataPoints.propTypes = {
 	dataPoints: PropTypes.arrayOf(PropTypes.shape({
 		date: PropTypes.string,
 		plays: PropTypes.number
-	})).isRequired
+	})).isRequired,
+	index: PropTypes.number.isRequired
 };
 
 export default ChartDataPoints;

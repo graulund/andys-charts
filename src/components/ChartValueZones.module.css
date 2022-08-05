@@ -1,11 +1,21 @@
 .zone {
 	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 16px;
 	height: 16px;
 	margin: -8px 0 0 -8px;
-	/*
+	/* * /
 	background-color: rgba(0,0,0,.5);
-	*/
+	/*  */
 	border-radius: 99px;
 	z-index: 2;
+}
+
+.marker {
+	width: 10px;
+	height: 10px;
+	background-color: #111;
+	border-radius: 99px;
 }

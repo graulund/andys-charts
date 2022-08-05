@@ -4,8 +4,16 @@
 	opacity: .4;
 }
 
+.area.fadedArea {
+	opacity: 0;
+}
+
 .line {
 	stroke-width: 2;
 	/* stroke: #3faa9e; */
 	fill: none;
+}
+
+.line.fadedLine {
+	stroke: rgba(0, 0, 0, .25);
 }

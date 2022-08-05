@@ -52,6 +52,8 @@ function ChartValueZones({ values }) {
 					}
 				};
 
+				const markerClassName = highlightedValueKey === key ? styles.marker : undefined;
+
 				return (
 					<div
 						className={styles.zone}
@@ -66,7 +68,9 @@ function ChartValueZones({ values }) {
 							marginLeft: `${-.5 * unitWidth}px`,
 						}}
 						key={key}
-					/>
+					>
+						<div class={markerClassName} />
+					</div>
 				);
 			}) }
 		</div>
