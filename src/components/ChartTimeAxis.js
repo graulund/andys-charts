@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { path } from "d3-path";
+
+import ChartContext from "./ChartContext";
 
 import {
 	dateFromYmd,
@@ -13,18 +15,20 @@ import styles from "./ChartAxes.module.css";
 
 const tickTextOffsetTop = 12;
 
-function ChartTimeAxis({
-	areaWidth,
-	areaHeight,
-	firstDate,
-	lastDate,
-	offsetLeft,
-	offsetTop
-}) {
+function ChartTimeAxis() {
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		firstDate,
+		lastDate,
+		mainAreaWidth,
+		mainAreaHeight
+	} = useContext(ChartContext);
+
 	// Horizontal axis line
 	const axisPath = path();
-	axisPath.moveTo(offsetLeft, offsetTop + areaHeight);
-	axisPath.lineTo(offsetLeft + areaWidth, offsetTop + areaHeight);
+	axisPath.moveTo(offsetLeft, offsetTop + mainAreaHeight);
+	axisPath.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
 
 	const start = dateFromYmd(firstDate);
 	const end = dateFromYmd(lastDate);
@@ -48,10 +52,10 @@ function ChartTimeAxis({
 				const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
 				const days = daysBetweenDates(start, monthDate);
 				const perc = days / totalDays;
-				const tickPos = offsetLeft + perc * areaWidth;
+				const tickPos = offsetLeft + perc * mainAreaWidth;
 				const tickPath = path();
 				tickPath.moveTo(tickPos, offsetTop);
-				tickPath.lineTo(tickPos, offsetTop + areaHeight);
+				tickPath.lineTo(tickPos, offsetTop + mainAreaHeight);
 
 				const prevMonth = months[index - 1];
 
@@ -67,7 +71,7 @@ function ChartTimeAxis({
 						<text
 							className={styles.axisText}
 							x={tickPos}
-							y={offsetTop + areaHeight + tickTextOffsetTop}
+							y={offsetTop + mainAreaHeight + tickTextOffsetTop}
 						>
 							{ label }
 						</text>
@@ -77,13 +81,5 @@ function ChartTimeAxis({
 		</>
 	);
 }
-
-ChartTimeAxis.propTypes = {
-	areaHeight: PropTypes.number.isRequired,
-	firstDate: PropTypes.string.isRequired, // yyyy-mm-dd
-	lastDate: PropTypes.string.isRequired,
-	offsetLeft: PropTypes.number.isRequired,
-	offsetTop: PropTypes.number.isRequired
-};
 
 export default ChartTimeAxis;

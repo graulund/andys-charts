@@ -19,9 +19,15 @@ function App() {
 
 	const listWithAll = [dataWeirdo, dataSoldier, dataTiger];
 
+	const tracks = [
+		{ title: "Weirdo", dataPoints: dataWeirdo },
+		{ title: "Soldier", dataPoints: dataSoldier },
+		{ title: "Tiger", dataPoints: dataTiger },
+	];
+
 	return (
 		<div className="App">
-			<Chart dataPointLists={listWithAll} />
+			<Chart tracks={tracks} />
 		</div>
 	);
 }

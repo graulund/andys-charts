@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useContext } from "react";
 import { path } from "d3-path";
 
+import ChartContext from "./ChartContext";
 import range from "../lib/range";
 
 import styles from "./ChartAxes.module.css";
@@ -10,19 +10,21 @@ const tickSize = 3;
 const tickTextOffsetTop = 4;
 const tickTextOffsetLeft = -5;
 
-function ChartValueAxis({
-	areaHeight,
-	maxValue,
-	minValue,
-	offsetLeft,
-	offsetTop
-}) {
+function ChartValueAxis() {
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		mainAreaHeight,
+		minValue,
+		maxValue
+	} = useContext(ChartContext);
+
 	const valueRange = maxValue - minValue;
 
 	// Vertical axis line
 	const axisPath = path();
 	axisPath.moveTo(offsetLeft, offsetTop);
-	axisPath.lineTo(offsetLeft, offsetTop + areaHeight);
+	axisPath.lineTo(offsetLeft, offsetTop + mainAreaHeight);
 
 	return (
 		<>
@@ -30,7 +32,7 @@ function ChartValueAxis({
 			{ range(minValue, maxValue).map((val) => {
 				// Render each tick, and tick value
 				const perc = 1 - (val - minValue) / valueRange;
-				const tickHeight = offsetTop + perc * areaHeight;
+				const tickHeight = offsetTop + perc * mainAreaHeight;
 				const tickPath = path();
 				tickPath.moveTo(offsetLeft - tickSize, tickHeight);
 				tickPath.lineTo(offsetLeft, tickHeight);
@@ -51,17 +53,5 @@ function ChartValueAxis({
 		</>
 	);
 }
-
-ChartValueAxis.propTypes = {
-	areaHeight: PropTypes.number.isRequired,
-	minValue: PropTypes.number,
-	maxValue: PropTypes.number.isRequired,
-	offsetLeft: PropTypes.number.isRequired,
-	offsetTop: PropTypes.number.isRequired
-};
-
-ChartValueAxis.defaultProps = {
-	minValue: 0
-};
 
 export default ChartValueAxis;

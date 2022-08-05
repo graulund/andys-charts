@@ -1,0 +1,27 @@
+.info {
+	position: absolute;
+	background-color: #fff;
+	pointer-events: none;
+	text-align: left;
+	padding: .75rem;
+	border-radius: 3px;
+	box-shadow: 0 2px 10px 0 rgba(0,0,0,.5);
+	z-index: 3;
+}
+
+.tracks {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+.tracks li {
+	padding: 0 0 .5rem;
+}
+
+.playInfo {
+	font-size: .75rem;
+	color: #666;
+	margin: 0;
+}

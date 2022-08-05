@@ -1,0 +1,11 @@
+.zone {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	margin: -8px 0 0 -8px;
+	/*
+	background-color: rgba(0,0,0,.5);
+	*/
+	border-radius: 99px;
+	z-index: 2;
+}

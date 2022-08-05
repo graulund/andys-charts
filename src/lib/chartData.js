@@ -26,6 +26,10 @@ export function padChartDataPointLists(dataPointLists, options) {
 		todayYmd = ""
 	} = options || {};
 
+	if (!dataPointLists?.length) {
+		return [];
+	}
+
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
 	const earliestDate = dataPointLists.reduce((extreme, data) => {
@@ -98,4 +102,43 @@ export function maxPlays(data) {
 
 		return val;
 	}, 0);
+}
+
+export function getValueKey(date, plays) {
+	return `${date}:${plays}`;
+}
+
+export function getValueFromKey(valueKey) {
+	const [date, plays] = valueKey.split(":");
+	return { date, plays: Number(plays) };
+}
+
+export function getAllValues(dataPointLists) {
+	const valuesMap = {};
+
+	dataPointLists.forEach((dataPoints, trackIndex) => {
+		dataPoints.forEach(({ date, plays }) => {
+			if (plays <= 0) {
+				return;
+			}
+
+			const valueKey = getValueKey(date, plays);
+
+			if (!valuesMap[valueKey]) {
+				valuesMap[valueKey] = [];
+			}
+
+			valuesMap[valueKey].push(trackIndex);
+		});
+	});
+
+	return Object.keys(valuesMap).map((valueKey) => {
+		const { date, plays } = getValueFromKey(valueKey);
+		return {
+			date,
+			plays,
+			indexes: valuesMap[valueKey],
+			valueKey
+		};
+	});
 }

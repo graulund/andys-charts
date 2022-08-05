@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { path } from "d3-path";
 
+import ChartContext from "./ChartContext";
+
 import styles from "./ChartDataPoints.module.css";
 
-function ChartDataPoints({
-	areaWidth,
-	areaHeight,
-	dataPoints,
-	maxValue,
-	offsetLeft,
-	offsetTop
-}) {
+function ChartDataPoints({ color, dataPoints }) {
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		mainAreaWidth,
+		mainAreaHeight,
+		maxValue
+	} = useContext(ChartContext);
+
 	if (!dataPoints?.length) {
 		return null;
 	}
@@ -21,40 +24,42 @@ function ChartDataPoints({
 	const numDays = dataPoints.length;
 
 	const p = path();
-	p.moveTo(offsetLeft, offsetTop + areaHeight);
+	let begun = false;
 
 	dataPoints.forEach(({ date, plays }, index) => {
 		const percY = (maxValue - plays) / maxValue;
-		const y = offsetTop + percY * areaHeight;
+		const y = offsetTop + percY * mainAreaHeight;
 		const percX = index / (numDays - 1);
-		const x = offsetLeft + percX * areaWidth;
+		const x = offsetLeft + percX * mainAreaWidth;
 
-		p.lineTo(x, y);
+		if (!begun) {
+			p.moveTo(x, y);
+			begun = true;
+		} else {
+			p.lineTo(x, y);
+		}
 	});
 
 	const linePath = p.toString();
-	p.lineTo(offsetLeft + areaWidth, offsetTop + areaHeight);
+	p.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
+	p.lineTo(offsetLeft, offsetTop + mainAreaHeight);
 	p.closePath();
 	const areaPath = p.toString();
 
 	return (
 		<>
-			<path className={styles.area} d={areaPath} />
-			<path className={styles.line} d={linePath} />
+			<path className={styles.area} d={areaPath} fill={color} />
+			<path className={styles.line} d={linePath} stroke={color} />
 		</>
 	);
 }
 
 ChartDataPoints.propTypes = {
-	areaWidth: PropTypes.number.isRequired,
-	areaHeight: PropTypes.number.isRequired,
+	color: PropTypes.string.isRequired,
 	dataPoints: PropTypes.arrayOf(PropTypes.shape({
 		date: PropTypes.string,
 		plays: PropTypes.number
-	})).isRequired,
-	maxValue: PropTypes.number.isRequired,
-	offsetLeft: PropTypes.number.isRequired,
-	offsetTop: PropTypes.number.isRequired
+	})).isRequired
 };
 
 export default ChartDataPoints;
