@@ -69,7 +69,7 @@ function ChartValueZones({ values }) {
 						}}
 						key={key}
 					>
-						<div class={markerClassName} />
+						<div className={markerClassName} />
 					</div>
 				);
 			}) }
