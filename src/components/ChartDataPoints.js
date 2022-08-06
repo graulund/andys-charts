@@ -8,8 +8,7 @@ import styles from "./ChartDataPoints.module.css";
 
 function ChartDataPoints({ color, dataPoints, index }) {
 	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
+		config,
 		highlightedIndex,
 		mainAreaWidth,
 		mainAreaHeight,
@@ -20,14 +19,22 @@ function ChartDataPoints({ color, dataPoints, index }) {
 		return null;
 	}
 
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		dataMaskId
+	} = config;
+
 	// Data is assumed to be padded here!
 
 	const numDays = dataPoints.length;
+	const maskSelector = `url(#${dataMaskId})`;
 
 	const p = path();
 	let begun = false;
 
 	dataPoints.forEach(({ date, plays }, index) => {
+		// Calculating coords
 		const percY = (maxValue - plays) / maxValue;
 		const y = offsetTop + percY * mainAreaHeight;
 		const percX = index / (numDays - 1);
@@ -54,8 +61,18 @@ function ChartDataPoints({ color, dataPoints, index }) {
 
 	return (
 		<>
-			<path className={areaClassName} d={areaPath} fill={colorAttr} />
-			<path className={lineClassName} d={linePath} stroke={colorAttr} />
+			<path
+				className={areaClassName}
+				d={areaPath}
+				fill={colorAttr}
+				mask={maskSelector}
+			/>
+			<path
+				className={lineClassName}
+				d={linePath}
+				stroke={colorAttr}
+				mask={maskSelector}
+			/>
 		</>
 	);
 }

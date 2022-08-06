@@ -3,57 +3,93 @@ import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
 
-import styles from "./ChartHighlightInfo.module.css";
-
 import {
 	dateFromYmd,
 	daysBetweenDates,
-	formatYearMonth,
-	getAllMonthsBetweenDates
+	formatDate
 } from "../lib/time";
 
-const infoVerticalOffset = 30;
+import styles from "./ChartHighlightInfo.module.css";
+
+const infoHorizontalOffset = -16;
+const infoVerticalOffset = 20;
 
 function ChartHighlightInfo({ value }) {
 	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
+		config,
 		firstDate,
-		highlightedValue,
 		lastDate,
 		mainAreaWidth,
 		mainAreaHeight,
 		maxValue
 	} = useContext(ChartContext);
 
-	if (!value) {
-		return null;
+	const {
+		chartBottomHeight: offsetBottom,
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		language
+	} = config;
+
+	// Return an element even if no value, for performance reasons
+
+	let playInfoString = "";
+	let infoX = 0;
+	let infoY = 0;
+	let markerX = 0;
+	let markerY = 0;
+
+	const titles = value?.titles || [];
+	const indexes = value?.indexes || [];
+	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
+	const markerClassName = value ? styles.marker : [styles.marker, styles.noMarker].join(" ");
+
+	if (value) {
+		const start = dateFromYmd(firstDate);
+		const end = dateFromYmd(lastDate);
+		const totalDays = daysBetweenDates(start, end);
+
+		const { date: ymd, plays } = value;
+
+		// Calculating coords
+		const date = dateFromYmd(ymd);
+		const percY = (maxValue - plays) / maxValue;
+		markerY = offsetTop + percY * mainAreaHeight;
+		infoY = offsetBottom + (1 - percY) * mainAreaHeight + infoVerticalOffset;
+		const days = daysBetweenDates(start, date);
+		const percX = days / totalDays;
+		markerX = offsetLeft + percX * mainAreaWidth + 0.5;
+		infoX = markerX + infoHorizontalOffset;
+
+		if (language === "da") {
+			const playsName = plays === 1 ? "afspilning" : "afspilninger";
+			playInfoString = `${plays} ${playsName} d. ${formatDate(date, language)}`;
+		} else {
+			const playsName = plays === 1 ? "play" : "plays";
+			playInfoString = `${plays} ${playsName} on ${formatDate(date, language)}`;
+		}
 	}
 
-	const start = dateFromYmd(firstDate);
-	const end = dateFromYmd(lastDate);
-	const totalDays = daysBetweenDates(start, end);
-
-	const { date: ymd, plays, indexes, titles } = value;
-
-	const date = dateFromYmd(ymd);
-	const percY = (maxValue - plays) / maxValue;
-	const y = offsetTop + percY * mainAreaHeight + infoVerticalOffset;
-	const days = daysBetweenDates(start, date);
-	const percX = days / totalDays;
-	const x = offsetLeft + percX * mainAreaWidth;
-
 	return (
-		<div className={styles.info} style={{ left: `${x}px`, top: `${y}px` }}>
-			<ul className={styles.tracks}>
-				{ titles.map((title, i) => (
-					<li key={indexes[i]}>{ title }</li>
-				)) }
-			</ul>
-			<p className={styles.playInfo}>
-				{ `${plays} afspilninger d. ${ymd}` }
-			</p>
-		</div>
+		<>
+			<div
+				className={infoClassName}
+				style={{ left: `${infoX}px`, bottom: `${infoY}px` }}
+			>
+				<ul className={styles.tracks}>
+					{ titles.map((title, i) => (
+						<li key={indexes[i]}>{ title }</li>
+					)) }
+				</ul>
+				<p className={styles.playInfo}>
+					{ playInfoString }
+				</p>
+			</div>
+			<div
+				className={markerClassName}
+				style={{ left: `${markerX}px`, top: `${markerY}px` }}
+			/>
+		</>
 	);
 }
 

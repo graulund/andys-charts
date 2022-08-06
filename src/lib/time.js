@@ -191,3 +191,15 @@ export function formatYearMonth(year, month, prevYear = 0, language = "en", styl
 			return monthName;
 	}
 }
+
+export function formatDate(date, language = "en") {
+	const day = date.getDate();
+	const month = date.getMonth();
+	const year = date.getFullYear();
+
+	if (language === "da") {
+		return `${day}. ${monthNamesDanish[month]} ${year}`;
+	}
+
+	return `${monthNames[month]} ${day}, ${year}`;
+}

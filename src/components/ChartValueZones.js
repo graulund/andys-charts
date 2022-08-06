@@ -2,20 +2,13 @@ import React, { useContext } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
+import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 import styles from "./ChartValueZones.module.css";
 
-import {
-	dateFromYmd,
-	daysBetweenDates,
-	formatYearMonth,
-	getAllMonthsBetweenDates
-} from "../lib/time";
-
 function ChartValueZones({ values }) {
 	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
+		config,
 		firstDate,
 		highlightedValueKey,
 		lastDate,
@@ -29,6 +22,11 @@ function ChartValueZones({ values }) {
 		return null;
 	}
 
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop
+	} = config;
+
 	const start = dateFromYmd(firstDate);
 	const end = dateFromYmd(lastDate);
 	const totalDays = daysBetweenDates(start, end);
@@ -36,6 +34,7 @@ function ChartValueZones({ values }) {
 	return (
 		<div className={styles.root}>
 			{ values.map(({ date: ymd, plays }) => {
+				// Calculating coords
 				const date = dateFromYmd(ymd);
 				const percY = (maxValue - plays) / maxValue;
 				const y = offsetTop + percY * mainAreaHeight;
@@ -52,8 +51,6 @@ function ChartValueZones({ values }) {
 					}
 				};
 
-				const markerClassName = highlightedValueKey === key ? styles.marker : undefined;
-
 				return (
 					<div
 						className={styles.zone}
@@ -68,9 +65,7 @@ function ChartValueZones({ values }) {
 							marginLeft: `${-.5 * unitWidth}px`,
 						}}
 						key={key}
-					>
-						<div className={markerClassName} />
-					</div>
+					/>
 				);
 			}) }
 		</div>

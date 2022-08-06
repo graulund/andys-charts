@@ -12,12 +12,16 @@ const tickTextOffsetLeft = -5;
 
 function ChartValueAxis() {
 	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
+		config,
 		mainAreaHeight,
 		minValue,
 		maxValue
 	} = useContext(ChartContext);
+
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop
+	} = config;
 
 	const valueRange = maxValue - minValue;
 
@@ -31,6 +35,7 @@ function ChartValueAxis() {
 			<path className={styles.axisLine} d={axisPath.toString()} />
 			{ range(minValue, maxValue).map((val) => {
 				// Render each tick, and tick value
+				// Calculating coords (y only)
 				const perc = 1 - (val - minValue) / valueRange;
 				const tickHeight = offsetTop + perc * mainAreaHeight;
 				const tickPath = path();

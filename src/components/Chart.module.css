@@ -1,6 +1,9 @@
 .chart {
-	position: relative;
 	max-width: 1000px;
 	margin: 50px auto;
 	background-color: #fff;
+}
+
+.inner {
+	position: relative;
 }

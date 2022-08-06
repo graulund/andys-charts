@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
+import ChartDataMask from "./ChartDataMask";
 import ChartDataPoints from "./ChartDataPoints";
 import ChartHighlightInfo from "./ChartHighlightInfo";
 import ChartLegend from "./ChartLegend";
@@ -12,44 +13,62 @@ import { maxPlays, padChartDataPointLists, getAllValues } from "../lib/chartData
 
 import styles from "./Chart.module.css";
 
-const chartWidth = 1000;
-const chartHeight = 145;
-const minMaxPlays = 4;
-const chartTopHeight = 4;
-const chartBottomHeight = 14;
-const chartLeftWidth = 18;
-const mainAreaWidth = chartWidth - chartLeftWidth;
-const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
+const defaultConfig = {
+	chartWidth: 1000,
+	chartHeight: 145,
+	minMaxPlays: 4,
+	chartTopHeight: 4,
+	chartBottomHeight: 14,
+	chartLeftWidth: 18,
+	language: "da",
+	dataMaskId: "andy-chart-data-mask",
+	singleColor: "#3faa9e",
+	colors: [
+		"#3faa9e", // Seafoam
+		"#b7000c", // Red
+		"#009107", // Green
+		"#2d61c1", // Blue
+		"#adb100", // Yellow
+		"#b70097", // Purple
+		"#666666"  // Grey
+	]
+};
 
-const singleColor = "#3faa9e";
-
-const colors = [
-	"#3faa9e", // Seafoam
-	"#b7000c", // Red
-	"#009107", // Green
-	"#2d61c1", // Blue
-	"#adb100", // Yellow
-	"#b70097", // Purple
-	"#666666"  // Grey
-];
-
-function Chart({ tracks }) {
+function Chart({ config: givenConfig, tracks }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
 	const [highlightedIndex, setHighlightedIndex] = useState(null);
-	const dataPointLists = (tracks || []).map(({ dataPoints }) => dataPoints);
-	const displayLists = padChartDataPointLists(dataPointLists);
-	const maxValues = displayLists.map((list) => maxPlays(list));
-	const maxValue = Math.max(minMaxPlays, ...maxValues);
+	const config = useMemo(() => ({ ...(givenConfig || {}), ...defaultConfig }), [givenConfig]);
 
-	const values = getAllValues(displayLists);
+	const {
+		chartBottomHeight,
+		chartHeight,
+		chartLeftWidth,
+		chartTopHeight,
+		chartWidth,
+		colors,
+		minMaxPlays,
+		singleColor
+	} = config;
+
+	const mainAreaWidth = chartWidth - chartLeftWidth;
+	const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
+
+	const { displayLists, maxValue, values } = useMemo(() => {
+		const dataPointLists = (tracks || []).map(({ dataPoints }) => dataPoints);
+		const displayLists = padChartDataPointLists(dataPointLists);
+		const maxValues = displayLists.map((list) => maxPlays(list));
+		const maxValue = Math.max(minMaxPlays, ...maxValues);
+		const values = getAllValues(displayLists);
+
+		return { displayLists, maxValue, values };
+	}, [minMaxPlays, tracks]);
 
 	const firstDataset = displayLists[0];
 	const firstDate = firstDataset[0]?.date;
 	const lastDate = firstDataset[firstDataset.length - 1]?.date;
 
 	const chartData = useMemo(() => ({
-		chartLeftWidth,
-		chartTopHeight,
+		config,
 		firstDate,
 		lastDate,
 		mainAreaHeight,
@@ -61,8 +80,7 @@ function Chart({ tracks }) {
 		setHighlightedIndex,
 		setHighlightedValueKey
 	}), [
-		chartLeftWidth,
-		chartTopHeight,
+		config,
 		firstDate,
 		lastDate,
 		mainAreaHeight,
@@ -87,7 +105,7 @@ function Chart({ tracks }) {
 		}
 
 		return null;
-	}, [highlightedValueKey]);
+	}, [highlightedValueKey, tracks, values]);
 
 	if (!firstDate || !lastDate) {
 		return null;
@@ -115,20 +133,26 @@ function Chart({ tracks }) {
 	return (
 		<div className={styles.chart}>
 			<ChartContext.Provider value={chartData}>
-				<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
-					<ChartValueAxis />
-					<ChartTimeAxis />
-					{ displayData.map(({ color, dataPoints, index }) => (
-						<ChartDataPoints
-							dataPoints={dataPoints}
-							color={color}
-							index={index}
-							key={index}
-						/>
-					)) }
-				</svg>
-				<ChartValueZones values={values} />
-				<ChartHighlightInfo isSingle={isSingle} value={highlightedValue} />
+				<div className={styles.inner}>
+					<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+						<ChartDataMask />
+						<ChartValueAxis />
+						<ChartTimeAxis />
+						{ displayData.map(({ color, dataPoints, index }) => (
+							<ChartDataPoints
+								dataPoints={dataPoints}
+								color={color}
+								index={index}
+								key={index}
+							/>
+						)) }
+					</svg>
+					<ChartValueZones values={values} />
+					<ChartHighlightInfo
+						isSingle={isSingle}
+						value={highlightedValue}
+					/>
+				</div>
 				<ChartLegend tracks={legendList} />
 			</ChartContext.Provider>
 		</div>

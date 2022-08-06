@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import PropTypes from "prop-types";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
@@ -17,13 +16,18 @@ const tickTextOffsetTop = 12;
 
 function ChartTimeAxis() {
 	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
+		config,
 		firstDate,
 		lastDate,
 		mainAreaWidth,
 		mainAreaHeight
 	} = useContext(ChartContext);
+
+	const {
+		chartLeftWidth: offsetLeft,
+		chartTopHeight: offsetTop,
+		language
+	} = config;
 
 	// Horizontal axis line
 	const axisPath = path();
@@ -49,6 +53,7 @@ function ChartTimeAxis() {
 			<path className={styles.axisLine} d={axisPath.toString()} />
 			{ months.map(({ year, month, ymd }, index) => {
 				// Render each tick, and tick value
+				// Calculating coords (x only)
 				const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
 				const days = daysBetweenDates(start, monthDate);
 				const perc = days / totalDays;
@@ -60,7 +65,7 @@ function ChartTimeAxis() {
 				const prevMonth = months[index - 1];
 
 				const label = formatYearMonth(
-					year, month, prevMonth?.year || 0, "da", monthFormatStyle
+					year, month, prevMonth?.year || 0, language, monthFormatStyle
 				);
 
 				// TODO: Somehow detect if there's not space for the label?
