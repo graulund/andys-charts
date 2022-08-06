@@ -46,7 +46,7 @@ function ChartValueAxis() {
 					<React.Fragment key={val}>
 						<path className={styles.axisLine} d={tickPath.toString()} />
 						<text
-							className={styles.axisValueText}
+							className={styles.axisValueLabel}
 							x={offsetLeft + tickTextOffsetLeft}
 							y={tickHeight + tickTextOffsetTop}
 						>

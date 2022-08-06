@@ -1,6 +1,4 @@
 .area {
-	/* fill: #84e4d9;
-	fill: #3faa9e; */
 	opacity: .4;
 }
 
@@ -10,10 +8,13 @@
 
 .line {
 	stroke-width: 2;
-	/* stroke: #3faa9e; */
 	fill: none;
 }
 
 .line.fadedLine {
 	stroke: rgba(0, 0, 0, .125);
+}
+
+.line.thinLine {
+	stroke-width: 1;
 }

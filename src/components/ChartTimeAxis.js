@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
@@ -13,8 +13,12 @@ import {
 import styles from "./ChartAxes.module.css";
 
 const tickTextOffsetTop = 12;
+const tickTextMinRightPadding = 8;
 
 function ChartTimeAxis() {
+	const firstLabelEl = useRef(null);
+	const [hideFirstLabel, setHideFirstLabel] = useState(false);
+
 	const {
 		config,
 		firstDate,
@@ -48,35 +52,63 @@ function ChartTimeAxis() {
 		monthFormatStyle = "small";
 	}
 
+	const calculateTickPos = (ymd) => {
+		const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
+		const days = daysBetweenDates(start, monthDate);
+		const perc = days / totalDays;
+		return offsetLeft + perc * mainAreaWidth;
+	};
+
+	// Detect if there's not enough space for the first time label
+	// This will happen if the first month is a partial month
+	// If we don't hide the first label, there will be a nasty looking double label overlap
+
+	useEffect(() => {
+		const el = firstLabelEl.current;
+		const firstMonth = months[0];
+		const nextMonth = months[1];
+
+		if (!el || !firstMonth || !nextMonth) {
+			setHideFirstLabel(false);
+			return;
+		}
+
+		const { width: actualWidth } = el.getBBox();
+		const firstTickPos = calculateTickPos(firstMonth.ymd);
+		const nextTickPos = calculateTickPos(nextMonth.ymd);
+		const spaceWidth = nextTickPos - firstTickPos;
+		setHideFirstLabel(actualWidth >= spaceWidth + tickTextMinRightPadding);
+	}, [firstLabelEl]);
+
 	return (
 		<>
 			<path className={styles.axisLine} d={axisPath.toString()} />
 			{ months.map(({ year, month, ymd }, index) => {
 				// Render each tick, and tick value
 				// Calculating coords (x only)
-				const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
-				const days = daysBetweenDates(start, monthDate);
-				const perc = days / totalDays;
-				const tickPos = offsetLeft + perc * mainAreaWidth;
+				const tickPos = calculateTickPos(ymd);
 				const tickPath = path();
 				tickPath.moveTo(tickPos, offsetTop);
 				tickPath.lineTo(tickPos, offsetTop + mainAreaHeight);
 
-				const prevMonth = months[index - 1];
+				const prevMonth = index > 1 || !hideFirstLabel ? months[index - 1] : undefined;
 
 				const label = formatYearMonth(
 					year, month, prevMonth?.year || 0, language, monthFormatStyle
 				);
 
-				// TODO: Somehow detect if there's not space for the label?
+				const labelClassName = index === 0 && hideFirstLabel
+					? [styles.axisLabel, styles.hiddenLabel].join(" ")
+					: styles.axisLabel;
 
 				return (
 					<React.Fragment key={ymd}>
 						<path className={styles.axisLine} d={tickPath.toString()} />
 						<text
-							className={styles.axisText}
+							className={labelClassName}
 							x={tickPos}
 							y={offsetTop + mainAreaHeight + tickTextOffsetTop}
+							ref={index === 0 ? firstLabelEl : undefined}
 						>
 							{ label }
 						</text>

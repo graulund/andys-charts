@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
 
 import styles from "./ChartDataPoints.module.css";
+
+const minDaysForThinLines = 300;
 
 function ChartDataPoints({ color, dataPoints, index }) {
 	const {
@@ -28,6 +31,7 @@ function ChartDataPoints({ color, dataPoints, index }) {
 	// Data is assumed to be padded here!
 
 	const numDays = dataPoints.length;
+	const manyDays = numDays >= minDaysForThinLines;
 	const maskSelector = `url(#${dataMaskId})`;
 
 	const p = path();
@@ -54,10 +58,16 @@ function ChartDataPoints({ color, dataPoints, index }) {
 	p.closePath();
 	const areaPath = p.toString();
 	const faded = typeof highlightedIndex === "number" && highlightedIndex !== index;
+	const colorAttr = !faded ? color : undefined;
 
-	const areaClassName = faded ? [styles.area, styles.fadedArea].join(" ") : styles.area;
-	const lineClassName = faded ? [styles.line, styles.fadedLine].join(" ") : styles.line;
-	const colorAttr = faded ? undefined : color;
+	const areaClassName = clsx(styles.area, {
+		[styles.fadedArea]: faded
+	});
+
+	const lineClassName = clsx(styles.line, {
+		[styles.fadedLine]: faded,
+		[styles.thinLine]: manyDays
+	});
 
 	return (
 		<>

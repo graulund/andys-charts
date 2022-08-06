@@ -4,13 +4,18 @@
 	fill: none;
 }
 
-.axisText {
+.axisLabel {
 	fill: #aaa;
 	font-size: 11px;
 }
 
-.axisValueText {
+.axisValueLabel {
 	fill: #aaa;
 	font-size: 11px;
 	text-anchor: end;
+}
+
+.axisLabel.hiddenLabel {
+	opacity: 0;
+	pointer-events: none;
 }
