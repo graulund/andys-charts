@@ -32,6 +32,9 @@ export function padChartDataPointLists(dataPointLists, options) {
 
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
+	console.log("options", options);
+	console.log("today", today);
+
 	const earliestDate = dataPointLists.reduce((extreme, data) => {
 		if (!data?.length) {
 			return extreme;
@@ -70,6 +73,11 @@ export function padChartDataPointLists(dataPointLists, options) {
 	const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
 
 	const startDate = new Date(Math.min(minDaysAgo, Math.max(maxDaysAgo, earliestDateWithPadding)));
+
+	console.log({
+		earliestDate,
+		latestDate
+	});
 
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))
@@ -139,6 +147,24 @@ export function getAllValues(dataPointLists) {
 			plays,
 			indexes: valuesMap[valueKey],
 			valueKey
+		};
+	});
+}
+
+export function unpackCompressedDataPoints(compressedDataPoints) {
+	return compressedDataPoints.map((data) => {
+		const [date, plays] = data;
+		return { date, plays };
+	});
+}
+
+export function unpackDataPointsInDataSets(dataSets) {
+	return dataSets.map((data) => {
+		const { dataPoints } = data;
+
+		return {
+			...data,
+			dataPoints: unpackCompressedDataPoints(dataPoints)
 		};
 	});
 }

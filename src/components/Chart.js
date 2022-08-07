@@ -14,6 +14,10 @@ import { maxPlays, padChartDataPointLists, getAllValues } from "../lib/chartData
 import styles from "./Chart.module.css";
 
 const defaultConfig = {
+	todayYmd: "",
+	maxDays: 183,
+	minDays: 10,
+	maxEndPaddingDays: 5,
 	chartWidth: 1000,
 	chartHeight: 145,
 	minMaxPlays: 4,
@@ -34,10 +38,10 @@ const defaultConfig = {
 	]
 };
 
-function Chart({ config: givenConfig, tracks }) {
+function Chart({ config: givenConfig, dataSets }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
 	const [highlightedIndex, setHighlightedIndex] = useState(null);
-	const config = useMemo(() => ({ ...(givenConfig || {}), ...defaultConfig }), [givenConfig]);
+	const config = useMemo(() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]);
 
 	const {
 		chartBottomHeight,
@@ -54,14 +58,14 @@ function Chart({ config: givenConfig, tracks }) {
 	const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
 
 	const { displayLists, maxValue, values } = useMemo(() => {
-		const dataPointLists = (tracks || []).map(({ dataPoints }) => dataPoints);
-		const displayLists = padChartDataPointLists(dataPointLists);
+		const dataPointLists = (dataSets || []).map(({ dataPoints }) => dataPoints);
+		const displayLists = padChartDataPointLists(dataPointLists, config);
 		const maxValues = displayLists.map((list) => maxPlays(list));
 		const maxValue = Math.max(minMaxPlays, ...maxValues);
 		const values = getAllValues(displayLists);
 
 		return { displayLists, maxValue, values };
-	}, [minMaxPlays, tracks]);
+	}, [config, minMaxPlays, dataSets]);
 
 	const firstDataset = displayLists[0];
 	const firstDate = firstDataset[0]?.date;
@@ -99,19 +103,19 @@ function Chart({ config: givenConfig, tracks }) {
 			if (value) {
 				return {
 					...value,
-					titles: value.indexes.map((index) => tracks[index].title)
+					titles: value.indexes.map((index) => dataSets[index].title)
 				};
 			}
 		}
 
 		return null;
-	}, [highlightedValueKey, tracks, values]);
+	}, [highlightedValueKey, dataSets, values]);
 
 	if (!firstDate || !lastDate) {
 		return null;
 	}
 
-	const isSingle = tracks.length === 1;
+	const isSingle = dataSets.length === 1;
 
 	const displayData = displayLists.map((dataPoints, i) => ({
 		color: isSingle ? singleColor : colors[i % colors.length],
@@ -123,7 +127,8 @@ function Chart({ config: givenConfig, tracks }) {
 	// and in SVGs, the last drawn item is topmost
 	displayData.reverse();
 
-	const legendList = tracks.map(({ title, url }, i) => ({
+	const legendList = dataSets.map(({ artists, title, url }, i) => ({
+		artists,
 		color: isSingle ? singleColor : colors[i % colors.length],
 		index: i,
 		title,
@@ -160,11 +165,17 @@ function Chart({ config: givenConfig, tracks }) {
 }
 
 Chart.propTypes = {
-	tracks: PropTypes.arrayOf(PropTypes.shape({
+	config: PropTypes.object,
+	dataSets: PropTypes.arrayOf(PropTypes.shape({
 		title: PropTypes.string,
+		artists: PropTypes.object,
 		url: PropTypes.string,
 		dataPoints: PropTypes.array
 	})).isRequired
+};
+
+Chart.defaultProps = {
+	config: null
 };
 
 export default Chart;

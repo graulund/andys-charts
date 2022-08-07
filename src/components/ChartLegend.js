@@ -2,11 +2,13 @@ import React, { useContext } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
+import TrackTitleDisplay from "./TrackTitleDisplay";
 
 import styles from "./ChartLegend.module.css";
 
 function ChartLegend({ tracks }) {
 	const {
+		config,
 		highlightedIndex,
 		setHighlightedIndex // set highlighted dataset
 	} = useContext(ChartContext);
@@ -15,10 +17,12 @@ function ChartLegend({ tracks }) {
 		return null;
 	}
 
+	const { language } = config;
+
 	return (
 		<div className={styles.legend} aria-label="Legend">
 			<ul className={styles.list}>
-				{ tracks.map(({ color, index, title, url }) => {
+				{ tracks.map(({ artists, color, index, title, url }) => {
 					const mouseOut = () => {
 						if (highlightedIndex === index) {
 							setHighlightedIndex(null);
@@ -34,7 +38,12 @@ function ChartLegend({ tracks }) {
 								onMouseOver={() => setHighlightedIndex(index)}
 								onMouseOut={mouseOut}
 							>
-								{ title }
+								<TrackTitleDisplay
+									artists={artists}
+									language={language}
+									mainClassName={styles.itemMain}
+									title={title}
+								/>
 							</a>
 						</li>
 					);
@@ -46,6 +55,7 @@ function ChartLegend({ tracks }) {
 
 ChartLegend.propTypes = {
 	tracks: PropTypes.arrayOf(PropTypes.shape({
+		artists: PropTypes.object,
 		color: PropTypes.string,
 		index: PropTypes.number,
 		title: PropTypes.string,
