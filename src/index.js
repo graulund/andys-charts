@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import "./index.css";
-import App from "./components/App";
+import Chart from "./components/Chart";
 
 import { unpackDataPointsInDataSets } from "./lib/chartData";
 
@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	if (data) {
 		const { config, dataSets } = data;
-		const root = ReactDOM.createRoot(document.getElementById("root"));
+		const root = ReactDOM.createRoot(document.querySelector(".andy-chart-container"));
 		root.render(
 			<React.StrictMode>
-				<App
+				<Chart
 					config={config}
 					dataSets={unpackDataPointsInDataSets(dataSets)}
 				/>
