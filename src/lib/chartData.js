@@ -32,9 +32,6 @@ export function padChartDataPointLists(dataPointLists, options) {
 
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
-	console.log("options", options);
-	console.log("today", today);
-
 	const earliestDate = dataPointLists.reduce((extreme, data) => {
 		if (!data?.length) {
 			return extreme;
@@ -74,17 +71,13 @@ export function padChartDataPointLists(dataPointLists, options) {
 
 	const startDate = new Date(Math.min(minDaysAgo, Math.max(maxDaysAgo, earliestDateWithPadding)));
 
-	console.log({
-		earliestDate,
-		latestDate
-	});
-
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))
 		.filter((l) => !!l);
 }
 
 export function padChartDataPoints(dataPoints, startDate, endDate) {
+	// Pad spaces in data set with 0 play days
 	if (!dataPoints?.length) {
 		return null;
 	}
@@ -100,6 +93,20 @@ export function padChartDataPoints(dataPoints, startDate, endDate) {
 	}
 
 	return out;
+}
+
+export function filterDataSets(dataSets, dataPointLists, minValues = 2) {
+	// Exclude data sets with very few data points (less than 2)
+	return dataPointLists.reduce((out, dataPoints, index) => {
+		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
+
+		if (hasMinValues) {
+			out.dataSets.push(dataSets[index]);
+			out.dataPointLists.push(dataPoints);
+		}
+
+		return out;
+	}, { dataSets: [], dataPointLists: [] });
 }
 
 export function maxPlays(data) {

@@ -9,7 +9,13 @@ import ChartLegend from "./ChartLegend";
 import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
 import ChartValueZones from "./ChartValueZones";
-import { maxPlays, padChartDataPointLists, getAllValues } from "../lib/chartData";
+
+import {
+	filterDataSets,
+	maxPlays,
+	padChartDataPointLists,
+	getAllValues
+} from "../lib/chartData";
 
 import styles from "./Chart.module.css";
 
@@ -21,6 +27,7 @@ const defaultConfig = {
 	chartWidth: 1000,
 	chartHeight: 145,
 	minMaxPlays: 4,
+	minValues: 2,
 	chartTopHeight: 4,
 	chartBottomHeight: 14,
 	chartLeftWidth: 18,
@@ -38,7 +45,7 @@ const defaultConfig = {
 	]
 };
 
-function Chart({ config: givenConfig, dataSets }) {
+function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
 	const [highlightedIndex, setHighlightedIndex] = useState(null);
 	const config = useMemo(() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]);
@@ -51,25 +58,49 @@ function Chart({ config: givenConfig, dataSets }) {
 		chartWidth,
 		colors,
 		minMaxPlays,
+		minValues,
 		singleColor
 	} = config;
+
+	// Calculate chart area
 
 	const mainAreaWidth = chartWidth - chartLeftWidth;
 	const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
 
-	const { displayLists, maxValue, values } = useMemo(() => {
-		const dataPointLists = (dataSets || []).map(({ dataPoints }) => dataPoints);
-		const displayLists = padChartDataPointLists(dataPointLists, config);
-		const maxValues = displayLists.map((list) => maxPlays(list));
+	const {
+		dataSets,
+		dataPointLists,
+		firstDate,
+		lastDate,
+		maxValue,
+		values
+	} = useMemo(() => {
+		// Pad and limit data
+
+		const paddedLists = padChartDataPointLists(
+			(givenDataSets || []).map(({ dataPoints }) => dataPoints),
+			config
+		);
+
+		// Filter data
+
+		const { dataSets, dataPointLists } = filterDataSets(
+			givenDataSets, paddedLists, minValues
+		);
+
+		// Get scope of data
+
+		const maxValues = dataPointLists.map((list) => maxPlays(list));
 		const maxValue = Math.max(minMaxPlays, ...maxValues);
-		const values = getAllValues(displayLists);
+		const values = getAllValues(dataPointLists);
+		const firstDataSet = dataPointLists[0];
+		const firstDate = firstDataSet[0]?.date;
+		const lastDate = firstDataSet[firstDataSet.length - 1]?.date;
 
-		return { displayLists, maxValue, values };
-	}, [config, minMaxPlays, dataSets]);
+		return { dataSets, dataPointLists, firstDate, lastDate, maxValue, values };
+	}, [config, minMaxPlays, minValues, givenDataSets]);
 
-	const firstDataset = displayLists[0];
-	const firstDate = firstDataset[0]?.date;
-	const lastDate = firstDataset[firstDataset.length - 1]?.date;
+	// Data for context
 
 	const chartData = useMemo(() => ({
 		config,
@@ -96,6 +127,8 @@ function Chart({ config: givenConfig, dataSets }) {
 		setHighlightedValueKey
 	]);
 
+	// Highlighted value (from moving mouse over data points)
+
 	const highlightedValue = useMemo(() => {
 		if (highlightedValueKey) {
 			const value = values.find(({ valueKey }) => valueKey === highlightedValueKey);
@@ -111,13 +144,17 @@ function Chart({ config: givenConfig, dataSets }) {
 		return null;
 	}, [highlightedValueKey, dataSets, values]);
 
+	// Abort if there's no data
+
 	if (!firstDate || !lastDate) {
 		return null;
 	}
 
+	// Display data for chart and legend
+
 	const isSingle = dataSets.length === 1;
 
-	const displayData = displayLists.map((dataPoints, i) => ({
+	const displayData = dataPointLists.map((dataPoints, i) => ({
 		color: isSingle ? singleColor : colors[i % colors.length],
 		dataPoints,
 		index: i
@@ -125,6 +162,7 @@ function Chart({ config: givenConfig, dataSets }) {
 
 	// Reverse because the first in the list needs to be at the top,
 	// and in SVGs, the last drawn item is topmost
+
 	displayData.reverse();
 
 	const legendList = dataSets.map(({ artists, title, url }, i) => ({
