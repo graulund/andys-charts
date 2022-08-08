@@ -136,7 +136,7 @@ function Chart({ config: givenConfig, dataSets }) {
 	}));
 
 	return (
-		<div className={styles.chart}>
+		<div className={styles.chart} aria-label="Line chart">
 			<ChartContext.Provider value={chartData}>
 				<div className={styles.inner}>
 					<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
