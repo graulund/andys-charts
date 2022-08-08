@@ -6,14 +6,16 @@
 }
 
 .list {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
 .listItem {
-	display: inline;
-	margin: 0 1.5em 0 0;
+	margin: 0 1.5em .25em 0;
 }
 
 .item {
