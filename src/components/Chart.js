@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
 
-import ChartContext from "./ChartContext";
+import ChartData from "./ChartData";
 import ChartDataMask from "./ChartDataMask";
 import ChartDataPoints from "./ChartDataPoints";
 import ChartHighlightInfo from "./ChartHighlightInfo";
@@ -16,6 +16,8 @@ import {
 	padChartDataPointLists,
 	getAllValues
 } from "../lib/chartData";
+
+import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 import styles from "./Chart.module.css";
 
@@ -73,6 +75,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		firstDate,
 		lastDate,
 		maxValue,
+		totalDays,
 		values
 	} = useMemo(() => {
 		// Pad and limit data
@@ -96,8 +99,23 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		const firstDataSet = dataPointLists[0];
 		const firstDate = firstDataSet?.[0]?.date;
 		const lastDate = firstDataSet?.[firstDataSet.length - 1]?.date;
+		let totalDays = 0;
 
-		return { dataSets, dataPointLists, firstDate, lastDate, maxValue, values };
+		if (firstDate && lastDate) {
+			const start = dateFromYmd(firstDate);
+			const end = dateFromYmd(lastDate);
+			totalDays = daysBetweenDates(start, end);
+		}
+
+		return {
+			dataSets,
+			dataPointLists,
+			firstDate,
+			lastDate,
+			maxValue,
+			totalDays,
+			values
+		};
 	}, [config, minMaxPlays, minValues, givenDataSets]);
 
 	// Data for context
@@ -113,7 +131,8 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		highlightedIndex,
 		highlightedValueKey,
 		setHighlightedIndex,
-		setHighlightedValueKey
+		setHighlightedValueKey,
+		totalDays
 	}), [
 		config,
 		firstDate,
@@ -124,7 +143,8 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		highlightedIndex,
 		highlightedValueKey,
 		setHighlightedIndex,
-		setHighlightedValueKey
+		setHighlightedValueKey,
+		totalDays
 	]);
 
 	// Highlighted value (from moving mouse over data points)
@@ -175,7 +195,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	return (
 		<div className={styles.chart} aria-label="Line chart">
-			<ChartContext.Provider value={chartData}>
+			<ChartData {...chartData}>
 				<div className={styles.inner}>
 					<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
 						<ChartDataMask />
@@ -197,7 +217,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 					/>
 				</div>
 				<ChartLegend tracks={legendList} />
-			</ChartContext.Provider>
+			</ChartData>
 		</div>
 	);
 }

@@ -2,12 +2,7 @@ import React, { useContext } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
-
-import {
-	dateFromYmd,
-	daysBetweenDates,
-	formatDate
-} from "../lib/time";
+import { dateFromYmd, formatDate } from "../lib/time";
 
 import styles from "./ChartHighlightInfo.module.css";
 
@@ -17,19 +12,12 @@ const infoVerticalOffset = 20;
 function ChartHighlightInfo({ value }) {
 	const {
 		config,
-		firstDate,
-		lastDate,
-		mainAreaWidth,
-		mainAreaHeight,
-		maxValue
+		getXPositionFromDate,
+		getYBottomPosition,
+		getYPosition
 	} = useContext(ChartContext);
 
-	const {
-		chartBottomHeight: offsetBottom,
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
-		language
-	} = config;
+	const { language } = config;
 
 	// Return an element even if no value, for performance reasons
 
@@ -45,20 +33,14 @@ function ChartHighlightInfo({ value }) {
 	const markerClassName = value ? styles.marker : [styles.marker, styles.noMarker].join(" ");
 
 	if (value) {
-		const start = dateFromYmd(firstDate);
-		const end = dateFromYmd(lastDate);
-		const totalDays = daysBetweenDates(start, end);
-
 		const { date: ymd, plays } = value;
 
 		// Calculating coords
+		markerY = getYPosition(plays);
+		infoY = getYBottomPosition(plays) + infoVerticalOffset;
+
 		const date = dateFromYmd(ymd);
-		const percY = (maxValue - plays) / maxValue;
-		markerY = offsetTop + percY * mainAreaHeight;
-		infoY = offsetBottom + (1 - percY) * mainAreaHeight + infoVerticalOffset;
-		const days = daysBetweenDates(start, date);
-		const percX = days / totalDays;
-		markerX = offsetLeft + percX * mainAreaWidth + 0.5;
+		markerX = getXPositionFromDate(date) + 0.5;
 		infoX = markerX + infoHorizontalOffset;
 
 		if (language === "da") {

@@ -5,7 +5,6 @@ import ChartContext from "./ChartContext";
 
 import {
 	dateFromYmd,
-	daysBetweenDates,
 	formatYearMonth,
 	getAllMonthsBetweenDates
 } from "../lib/time";
@@ -22,6 +21,7 @@ function ChartTimeAxis() {
 	const {
 		config,
 		firstDate,
+		getXPositionFromDate,
 		lastDate,
 		mainAreaWidth,
 		mainAreaHeight
@@ -39,9 +39,6 @@ function ChartTimeAxis() {
 	axisPath.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
 
 	const start = dateFromYmd(firstDate);
-	const end = dateFromYmd(lastDate);
-	const totalDays = daysBetweenDates(start, end);
-
 	const months = getAllMonthsBetweenDates(firstDate, lastDate);
 	const monthCount = months.length;
 	let monthFormatStyle = "normal";
@@ -56,11 +53,9 @@ function ChartTimeAxis() {
 		(ymd) => {
 			// Calculating coords (x only)
 			const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
-			const days = daysBetweenDates(start, monthDate);
-			const perc = days / totalDays;
-			return offsetLeft + perc * mainAreaWidth;
+			return getXPositionFromDate(monthDate);
 		},
-		[start, mainAreaWidth, offsetLeft, totalDays]
+		[start, getXPositionFromDate]
 	);
 
 	// Detect if there's not enough space for the first time label

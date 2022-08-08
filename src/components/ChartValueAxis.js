@@ -13,6 +13,7 @@ const tickTextOffsetLeft = -5;
 function ChartValueAxis() {
 	const {
 		config,
+		getYPosition,
 		mainAreaHeight,
 		minValue,
 		maxValue
@@ -22,8 +23,6 @@ function ChartValueAxis() {
 		chartLeftWidth: offsetLeft,
 		chartTopHeight: offsetTop
 	} = config;
-
-	const valueRange = maxValue - minValue;
 
 	// Vertical axis line
 	const axisPath = path();
@@ -36,8 +35,7 @@ function ChartValueAxis() {
 			{ range(minValue, maxValue).map((val) => {
 				// Render each tick, and tick value
 				// Calculating coords (y only)
-				const perc = 1 - (val - minValue) / valueRange;
-				const tickHeight = offsetTop + perc * mainAreaHeight;
+				const tickHeight = getYPosition(val);
 				const tickPath = path();
 				tickPath.moveTo(offsetLeft - tickSize, tickHeight);
 				tickPath.lineTo(offsetLeft, tickHeight);

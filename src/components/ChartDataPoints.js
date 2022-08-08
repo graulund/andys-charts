@@ -12,10 +12,12 @@ const minDaysForThinLines = 300;
 function ChartDataPoints({ color, dataPoints, index }) {
 	const {
 		config,
+		getXPositionFromDaysSinceStart,
+		getYPosition,
 		highlightedIndex,
 		mainAreaWidth,
 		mainAreaHeight,
-		maxValue
+		totalDays
 	} = useContext(ChartContext);
 
 	if (!dataPoints?.length) {
@@ -30,8 +32,7 @@ function ChartDataPoints({ color, dataPoints, index }) {
 
 	// Data is assumed to be padded here!
 
-	const numDays = dataPoints.length;
-	const manyDays = numDays >= minDaysForThinLines;
+	const manyDays = totalDays >= minDaysForThinLines;
 	const maskSelector = `url(#${dataMaskId})`;
 
 	const p = path();
@@ -42,10 +43,8 @@ function ChartDataPoints({ color, dataPoints, index }) {
 
 	dataPoints.forEach(({ date, plays }, index) => {
 		// Calculating coords
-		const percY = (maxValue - plays) / maxValue;
-		const y = offsetTop + percY * mainAreaHeight;
-		const percX = index / (numDays - 1);
-		const x = offsetLeft + percX * mainAreaWidth;
+		const y = getYPosition(plays);
+		const x = getXPositionFromDaysSinceStart(index);
 
 		if (!begun) {
 			p.moveTo(x, y);
