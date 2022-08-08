@@ -6,7 +6,15 @@ import Chart from "./components/Chart";
 
 import { unpackDataPointsInDataSets } from "./lib/chartData";
 
-document.addEventListener("DOMContentLoaded", () => {
+function docReady(handleReady) {
+	if (document.readyState === "complete") {
+		handleReady();
+	} else {
+		document.addEventListener("DOMContentLoaded", handleReady);
+	}
+}
+
+docReady(() => {
 	const data = window.chartData;
 
 	if (data) {

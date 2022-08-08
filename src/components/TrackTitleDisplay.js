@@ -80,7 +80,7 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		suffix.push((
 			<>
 				{ `${asText(language)} ` }
-				<ArtistName name={artists.as.name} key="as" />
+				<ArtistName name={artists.as.name} />
 			</>
 		));
 	}
@@ -89,7 +89,7 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		suffix.push((
 			<>
 				{ `${withText(language)} ` }
-				<ArtistList artists={artists.with} key="with" />
+				<ArtistList artists={artists.with} />
 			</>
 		));
 	}
@@ -98,7 +98,7 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		suffix.push((
 			<>
 				{ "featuring " }
-				<ArtistList artists={artists.feat} key="feat" />
+				<ArtistList artists={artists.feat} />
 			</>
 		));
 	}
@@ -119,10 +119,10 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 				<>
 					{" ("}
 					{ suffix.map((el, i) => (
-						<>
+						<React.Fragment key={i}>
 							{ i > 0 ? " " : null }
 							{ el }
-						</>
+						</React.Fragment>
 					)) }
 					{")"}
 				</>
