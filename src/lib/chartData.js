@@ -109,6 +109,60 @@ export function filterDataSets(dataSets, dataPointLists, minValues = 2) {
 	}, { dataSets: [], dataPointLists: [] });
 }
 
+export function getPaddedDataPointSegments(dataPoints) {
+	// Split segments of the padded data points list into line segments,
+	// removing any big swaths (>= 2) of contiguous zeroes
+	// (All dates within a segment are guaranteed to be continguous)
+
+	let numZeroes = 0;
+	let lastDataPoint = null;
+	let currentSegment = null;
+
+	const segments = dataPoints.reduce((segments, dataPoint, index) => {
+		const { plays } = dataPoint;
+
+		if (plays > 0) {
+			// Date has value
+			if (!currentSegment) {
+				// Segment opens
+				currentSegment = [];
+
+				if (lastDataPoint) {
+					// Push first zero
+					currentSegment.push(lastDataPoint);
+				}
+			} else if (numZeroes > 0 && lastDataPoint) {
+				// Push single middle zero
+				currentSegment.push(lastDataPoint);
+			}
+
+			currentSegment.push(dataPoint);
+			numZeroes = 0;
+		} else if (++numZeroes >= 2 && currentSegment) {
+			// Date has no value, and at least two zeroes behind us now
+
+			// Push last zero
+			currentSegment.push(lastDataPoint);
+
+			// Segment closes
+			segments.push(currentSegment);
+			currentSegment = null;
+		} else if (index === dataPoints.length - 1 && currentSegment) {
+			// If the last item is a zero, remember to push that
+			currentSegment.push(dataPoint);
+		}
+
+		lastDataPoint = dataPoint;
+		return segments;
+	}, []);
+
+	if (currentSegment) {
+		segments.push(currentSegment);
+	}
+
+	return segments;
+}
+
 export function maxPlays(data) {
 	return (data || []).reduce((val, current) => {
 		if (current.plays > val) {

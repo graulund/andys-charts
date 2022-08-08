@@ -1,107 +1,26 @@
-import React, { useContext } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
-import { path } from "d3-path";
 
-import ChartContext from "./ChartContext";
-
-import styles from "./ChartDataPoints.module.css";
-
-const minDaysForThinLines = 300;
+import ChartDataPointsSegment from "./ChartDataPointsSegment";
+import { getPaddedDataPointSegments } from "../lib/chartData";
 
 function ChartDataPoints({ color, dataPoints, index }) {
-	const {
-		config,
-		getXPositionFromDaysSinceStart,
-		getYPosition,
-		highlightedIndex,
-		mainAreaWidth,
-		mainAreaHeight,
-		totalDays
-	} = useContext(ChartContext);
-
 	if (!dataPoints?.length) {
 		return null;
 	}
 
-	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
-		dataMaskId
-	} = config;
-
 	// Data is assumed to be padded here!
+	// Split into area chart segments
+	const segments = getPaddedDataPointSegments(dataPoints);
 
-	const manyDays = totalDays >= minDaysForThinLines;
-	const maskSelector = `url(#${dataMaskId})`;
-
-	const p = path();
-	let begun = false;
-	let lastDrawnX;
-	let prevX;
-	let prevY;
-
-	dataPoints.forEach(({ date, plays }, index) => {
-		// Calculating coords
-		const y = getYPosition(plays);
-		const x = getXPositionFromDaysSinceStart(index);
-
-		if (!begun) {
-			p.moveTo(x, y);
-			begun = true;
-		} else {
-			// Filter out needless points in straight horizontal lines
-			if (y !== prevY) {
-				if (typeof prevY === "number") {
-					p.lineTo(prevX, prevY);
-				}
-
-				p.lineTo(x, y);
-				lastDrawnX = x;
-			}
-
-			prevX = x;
-			prevY = y;
-		}
-	});
-
-	if (prevX > lastDrawnX) {
-		p.lineTo(prevX, prevY);
-	}
-
-	const linePath = p.toString();
-	p.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
-	p.lineTo(offsetLeft, offsetTop + mainAreaHeight);
-	p.closePath();
-	const areaPath = p.toString();
-	const faded = typeof highlightedIndex === "number" && highlightedIndex !== index;
-	const colorAttr = !faded ? color : undefined;
-
-	const areaClassName = clsx(styles.area, {
-		[styles.fadedArea]: faded
-	});
-
-	const lineClassName = clsx(styles.line, {
-		[styles.fadedLine]: faded,
-		[styles.thinLine]: manyDays
-	});
-
-	return (
-		<>
-			<path
-				className={areaClassName}
-				d={areaPath}
-				fill={colorAttr}
-				mask={maskSelector}
-			/>
-			<path
-				className={lineClassName}
-				d={linePath}
-				stroke={colorAttr}
-				mask={maskSelector}
-			/>
-		</>
-	);
+	return segments.map((segment, segmentIndex) => (
+		<ChartDataPointsSegment
+			color={color}
+			dataPoints={segment}
+			index={index}
+			key={`${index}-${segmentIndex}`}
+		/>
+	));
 }
 
 ChartDataPoints.propTypes = {

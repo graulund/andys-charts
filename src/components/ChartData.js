@@ -66,6 +66,8 @@ function ChartData({ children, ...data }) {
 		[getXPositionFromDate]
 	);
 
+	// Add the functions to the context, along with the passed data
+
 	const contextData = useMemo(() => ({
 		...data,
 		getXPositionFromDate,
