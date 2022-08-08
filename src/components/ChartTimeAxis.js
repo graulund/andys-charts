@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
@@ -52,12 +52,16 @@ function ChartTimeAxis() {
 		monthFormatStyle = "small";
 	}
 
-	const calculateTickPos = (ymd) => {
-		const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
-		const days = daysBetweenDates(start, monthDate);
-		const perc = days / totalDays;
-		return offsetLeft + perc * mainAreaWidth;
-	};
+	const calculateTickPos = useCallback(
+		(ymd) => {
+			// Calculating coords (x only)
+			const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
+			const days = daysBetweenDates(start, monthDate);
+			const perc = days / totalDays;
+			return offsetLeft + perc * mainAreaWidth;
+		},
+		[start, mainAreaWidth, offsetLeft, totalDays]
+	);
 
 	// Detect if there's not enough space for the first time label
 	// This will happen if the first month is a partial month
@@ -78,14 +82,13 @@ function ChartTimeAxis() {
 		const nextTickPos = calculateTickPos(nextMonth.ymd);
 		const spaceWidth = nextTickPos - firstTickPos;
 		setHideFirstLabel(actualWidth >= spaceWidth + tickTextMinRightPadding);
-	}, [firstLabelEl]);
+	}, [calculateTickPos, firstLabelEl, months]);
 
 	return (
 		<>
 			<path className={styles.axisLine} d={axisPath.toString()} />
 			{ months.map(({ year, month, ymd }, index) => {
 				// Render each tick, and tick value
-				// Calculating coords (x only)
 				const tickPos = calculateTickPos(ymd);
 				const tickPath = path();
 				tickPath.moveTo(tickPos, offsetTop);
