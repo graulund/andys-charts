@@ -2,23 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
-
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
-
-/*
-config,
-firstDate,
-lastDate,
-mainAreaHeight,
-mainAreaWidth,
-minValue: 0,
-maxValue,
-highlightedIndex,
-highlightedValueKey,
-setHighlightedIndex,
-setHighlightedValueKey
-*/
-
 
 function ChartData({ children, ...data }) {
 	const {
