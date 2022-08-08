@@ -22,7 +22,6 @@ function ChartValueZones({ values }) {
 	return (
 		<div className={styles.root}>
 			{ values.map(({ date: ymd, plays }) => {
-				// Calculating coords
 				const y = getYPosition(plays);
 				const x = getXPositionFromYmd(ymd);
 				const key = `${ymd}:${plays}`;

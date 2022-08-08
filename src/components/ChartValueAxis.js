@@ -34,7 +34,6 @@ function ChartValueAxis() {
 			<path className={styles.axisLine} d={axisPath.toString()} />
 			{ range(minValue, maxValue).map((val) => {
 				// Render each tick, and tick value
-				// Calculating coords (y only)
 				const tickHeight = getYPosition(val);
 				const tickPath = path();
 				tickPath.moveTo(offsetLeft - tickSize, tickHeight);

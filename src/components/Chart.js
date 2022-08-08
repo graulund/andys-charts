@@ -43,7 +43,7 @@ const defaultConfig = {
 		"#2d61c1", // Blue
 		"#adb100", // Yellow
 		"#b70097", // Purple
-		"#666666"  // Grey
+		"#666" // Grey
 	]
 };
 

@@ -47,7 +47,6 @@ function ChartDataPointsSegment({ color, dataPoints, index }) {
 		let lastDrawnY;
 
 		dataPoints.forEach(({ plays }, index) => {
-			// Calculating coords
 			const y = getYPosition(plays);
 			const x = getXPositionFromDaysSinceStart(startOffset + index);
 

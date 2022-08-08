@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 
 import ChartDataPointsSegment from "./ChartDataPointsSegment";
 import { getPaddedDataPointSegments } from "../lib/chartData";
 
 function ChartDataPoints({ color, dataPoints, index }) {
-	if (!dataPoints?.length) {
-		return null;
-	}
-
 	// Data is assumed to be padded here!
 	// Split into area chart segments
-	const segments = getPaddedDataPointSegments(dataPoints);
+
+	const segments = useMemo(
+		() => getPaddedDataPointSegments(dataPoints),
+		[dataPoints]
+	);
 
 	return segments.map((segment, segmentIndex) => (
 		<ChartDataPointsSegment

@@ -51,7 +51,6 @@ function ChartTimeAxis() {
 
 	const calculateTickPos = useCallback(
 		(ymd) => {
-			// Calculating coords (x only)
 			const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
 			return getXPositionFromDate(monthDate);
 		},

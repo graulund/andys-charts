@@ -32,10 +32,11 @@ function ChartHighlightInfo({ value }) {
 	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
 	const markerClassName = value ? styles.marker : [styles.marker, styles.noMarker].join(" ");
 
+	// Displaying a marker and info bubble
+
 	if (value) {
 		const { date: ymd, plays } = value;
 
-		// Calculating coords
 		markerY = getYPosition(plays);
 		infoY = getYBottomPosition(plays) + infoVerticalOffset;
 
