@@ -94,8 +94,8 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		const maxValue = Math.max(minMaxPlays, ...maxValues);
 		const values = getAllValues(dataPointLists);
 		const firstDataSet = dataPointLists[0];
-		const firstDate = firstDataSet[0]?.date;
-		const lastDate = firstDataSet[firstDataSet.length - 1]?.date;
+		const firstDate = firstDataSet?.[0]?.date;
+		const lastDate = firstDataSet?.[firstDataSet.length - 1]?.date;
 
 		return { dataSets, dataPointLists, firstDate, lastDate, maxValue, values };
 	}, [config, minMaxPlays, minValues, givenDataSets]);

@@ -36,6 +36,9 @@ function ChartDataPoints({ color, dataPoints, index }) {
 
 	const p = path();
 	let begun = false;
+	let lastDrawnX;
+	let prevX;
+	let prevY;
 
 	dataPoints.forEach(({ date, plays }, index) => {
 		// Calculating coords
@@ -48,9 +51,24 @@ function ChartDataPoints({ color, dataPoints, index }) {
 			p.moveTo(x, y);
 			begun = true;
 		} else {
-			p.lineTo(x, y);
+			// Filter out needless points in straight horizontal lines
+			if (y !== prevY) {
+				if (typeof prevY === "number") {
+					p.lineTo(prevX, prevY);
+				}
+
+				p.lineTo(x, y);
+				lastDrawnX = x;
+			}
+
+			prevX = x;
+			prevY = y;
 		}
 	});
+
+	if (prevX > lastDrawnX) {
+		p.lineTo(prevX, prevY);
+	}
 
 	const linePath = p.toString();
 	p.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
