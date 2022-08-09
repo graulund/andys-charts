@@ -196,26 +196,38 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	return (
 		<div className={styles.chart} aria-label="Line chart">
 			<ChartData {...chartData}>
-				<div className={styles.inner}>
-					<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
-						<ChartDataMask />
-						<ChartValueAxis />
-						<ChartTimeAxis />
-						{ displayData.map(({ color, dataPoints, index }) => (
-							<ChartDataPoints
-								dataPoints={dataPoints}
-								color={color}
-								index={index}
-								key={index}
-							/>
-						)) }
-					</svg>
-					<ChartValueZones values={values} />
-					<ChartHighlightInfo
-						isSingle={isSingle}
-						value={highlightedValue}
-					/>
+				<div className={styles.mainContainer}>
+					<div className={styles.inner}>
+						<svg
+							className={styles.canvas}
+							viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+							style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}
+						>
+							<ChartDataMask />
+							<ChartTimeAxis />
+							{ displayData.map(({ color, dataPoints, index }) => (
+								<ChartDataPoints
+									dataPoints={dataPoints}
+									color={color}
+									index={index}
+									key={index}
+								/>
+							)) }
+						</svg>
+						<ChartValueZones values={values} />
+					</div>
 				</div>
+				<svg
+					className={styles.valueAxis}
+					viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}
+					style={{ width: `${chartLeftWidth}px`, height: `${chartHeight}px` }}
+				>
+					<ChartValueAxis />
+				</svg>
+				<ChartHighlightInfo
+					isSingle={isSingle}
+					value={highlightedValue}
+				/>
 				<ChartLegend tracks={legendList} />
 			</ChartData>
 		</div>

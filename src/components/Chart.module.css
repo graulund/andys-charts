@@ -1,7 +1,23 @@
 .chart {
+	position: relative;
 	max-width: 1000px;
 }
 
 .inner {
 	position: relative;
+}
+
+.mainContainer {
+	overflow-x: auto;
+}
+
+.canvas {
+	display: block;
+}
+
+.valueAxis {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: #fff;
 }
