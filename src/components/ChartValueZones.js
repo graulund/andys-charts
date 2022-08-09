@@ -7,7 +7,7 @@ import styles from "./ChartValueZones.module.css";
 
 function ChartValueZones({ values }) {
 	const {
-		chartWidth,
+		config,
 		getXPositionFromYmd,
 		getYPosition,
 		highlightedValueKey,
@@ -20,6 +20,7 @@ function ChartValueZones({ values }) {
 		return null;
 	}
 
+	const { chartWidth } = config;
 	const valueZoneLeftMargin = -.5 * unitWidth;
 
 	return (
@@ -35,7 +36,8 @@ function ChartValueZones({ values }) {
 					}
 				};
 
-				// TODO: Prevent width overflow
+				// Prevent width overflow
+				const overflow = Math.max(0, x + unitWidth + valueZoneLeftMargin - chartWidth);
 
 				return (
 					<div
@@ -45,7 +47,7 @@ function ChartValueZones({ values }) {
 						style={{
 							left: `${x}px`,
 							top: `${y}px`,
-							width: `${unitWidth}px`,
+							width: `${unitWidth - overflow}px`,
 							height: `${unitHeight}px`,
 							marginTop: `${-.5 * unitHeight}px`,
 							marginLeft: `${valueZoneLeftMargin}px`,
