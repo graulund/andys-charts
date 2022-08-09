@@ -9,7 +9,7 @@ import styles from "./ChartHighlightInfo.module.css";
 const infoHorizontalOffset = -16;
 const infoVerticalOffset = 20;
 
-function ChartHighlightInfo({ value }) {
+function ChartHighlightInfo({ isSingle, value }) {
 	const {
 		config,
 		getXPositionFromDate,
@@ -59,11 +59,13 @@ function ChartHighlightInfo({ value }) {
 				className={infoClassName}
 				style={{ left: `${infoX}px`, bottom: `${infoY}px` }}
 			>
-				<ul className={styles.tracks}>
-					{ titles.map((title, i) => (
-						<li key={indexes[i]}>{ title }</li>
-					)) }
-				</ul>
+				{ !isSingle ? (
+					<ul className={styles.tracks}>
+						{ titles.map((title, i) => (
+							<li key={indexes[i]}>{ title }</li>
+						)) }
+					</ul>
+				) : null }
 				<p className={styles.playInfo}>
 					{ playInfoString }
 				</p>
@@ -77,6 +79,7 @@ function ChartHighlightInfo({ value }) {
 }
 
 ChartHighlightInfo.propTypes = {
+	isSingle: PropTypes.bool.isRequired,
 	value: PropTypes.shape({
 		date: PropTypes.string,
 		plays: PropTypes.number,
@@ -85,6 +88,7 @@ ChartHighlightInfo.propTypes = {
 };
 
 ChartHighlightInfo.defaultProps = {
+	isSingle: false,
 	value: null
 };
 
