@@ -7,8 +7,8 @@ import { dateFromYmd, formatDate } from "../lib/time";
 import styles from "./ChartHighlightInfo.module.css";
 
 const infoHorizontalOffset = -16;
-const infoVerticalOffset = 70; // 20;
-const infoApproxWidth = 200;
+const infoVerticalOffset = 20;
+const windowWidthBuffer = 250;
 
 function ChartHighlightInfo({ isSingle, value }) {
 	const {
@@ -30,8 +30,7 @@ function ChartHighlightInfo({ isSingle, value }) {
 	const titles = value?.titles || [];
 	const indexes = value?.indexes || [];
 	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
-	const maxX = window.innerWidth - infoApproxWidth;
-	// TODO: Use actual width somehow(?)
+	const maxX = window.innerWidth - windowWidthBuffer;
 
 	// Displaying a marker and info bubble
 

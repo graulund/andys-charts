@@ -1,9 +1,8 @@
 .chart {
-	position: relative;
 	max-width: 1000px;
 }
 
-.inner {
+.main, .inner {
 	position: relative;
 }
 

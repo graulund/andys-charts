@@ -23,6 +23,8 @@ export function padChartDataPointLists(dataPointLists, options) {
 		maxDays = 183,
 		minDays = 10,
 		maxEndPaddingDays = 5,
+		overrideStartYmd = "",
+		overrideEndYmd = "",
 		todayYmd = ""
 	} = options || {};
 
@@ -30,46 +32,63 @@ export function padChartDataPointLists(dataPointLists, options) {
 		return [];
 	}
 
+	let startDate = null;
+	let endDate = null;
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
-	const earliestDate = dataPointLists.reduce((extreme, data) => {
-		if (!data?.length) {
+	// If not overridden, analyze the data's scope (overall earliest and latest play times),
+	// and calculate start and end dates from that, according to our rules
+
+	if (overrideStartYmd && overrideEndYmd) {
+		startDate = dateFromYmd(overrideStartYmd);
+		endDate = dateFromYmd(overrideEndYmd);
+	} else {
+		const earliestDate = dataPointLists.reduce((extreme, data) => {
+			if (!data?.length) {
+				return extreme;
+			}
+
+			const firstItem = data[0];
+			const firstDate = dateFromYmd(firstItem.date);
+
+			if (!extreme || firstDate < extreme) {
+				return firstDate;
+			}
+
 			return extreme;
-		}
+		}, null);
 
-		const firstItem = data[0];
-		const firstDate = dateFromYmd(firstItem.date);
+		const latestDate = dataPointLists.reduce((extreme, data) => {
+			if (!data?.length) {
+				return extreme;
+			}
 
-		if (!extreme || firstDate < extreme) {
-			return firstDate;
-		}
+			const lastItem = data[data.length - 1];
+			const lastDate = dateFromYmd(lastItem.date);
 
-		return extreme;
-	}, null);
+			if (!extreme || lastDate > extreme) {
+				return lastDate;
+			}
 
-	const latestDate = dataPointLists.reduce((extreme, data) => {
-		if (!data?.length) {
 			return extreme;
-		}
+		}, null);
 
-		const lastItem = data[data.length - 1];
-		const lastDate = dateFromYmd(lastItem.date);
+		const earliestDateWithPadding = prevDay(earliestDate);
+		const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
 
-		if (!extreme || lastDate > extreme) {
-			return lastDate;
-		}
+		endDate = new Date(Math.min(
+			latestDateWithPadding,
+			today
+		));
 
-		return extreme;
-	}, null);
+		const minDaysAgo = offsetDate(endDate, -1 * minDays);
+		const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
 
-	const earliestDateWithPadding = prevDay(earliestDate);
-	const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
-	const endDate = new Date(Math.min(latestDateWithPadding, today));
-
-	const minDaysAgo = offsetDate(endDate, -1 * minDays);
-	const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
-
-	const startDate = new Date(Math.min(minDaysAgo, Math.max(maxDaysAgo, earliestDateWithPadding)));
+		startDate = new Date(Math.min(
+			minDaysAgo,
+			Math.max(maxDaysAgo, earliestDateWithPadding)
+		));
+	}
 
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))

@@ -25,6 +25,8 @@ import styles from "./Chart.module.css";
 
 const defaultConfig = {
 	todayYmd: "",
+	overrideStartYmd: "",
+	overrideEndYmd: "",
 	maxDays: 183,
 	minDays: 10,
 	maxEndPaddingDays: 5,
@@ -203,39 +205,41 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	return (
 		<div className={styles.chart} aria-label="Line chart">
 			<ChartData {...chartData}>
-				<ChartScrollContainer>
-					<div className={styles.inner}>
-						<svg
-							className={styles.canvas}
-							viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-							style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}
-						>
-							<ChartDataMask />
-							<ChartTimeAxis />
-							{ displayData.map(({ color, dataPoints, index }) => (
-								<ChartDataPoints
-									dataPoints={dataPoints}
-									color={color}
-									index={index}
-									key={index}
-								/>
-							)) }
-						</svg>
-						<ChartValueZones values={values} />
-						<ChartHighlightMarker value={highlightedValue} />
-					</div>
-				</ChartScrollContainer>
-				<svg
-					className={styles.valueAxis}
-					viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}
-					style={{ width: `${chartLeftWidth}px`, height: `${chartHeight}px` }}
-				>
-					<ChartValueAxis />
-				</svg>
-				<ChartHighlightInfo
-					isSingle={isSingle}
-					value={highlightedValue}
-				/>
+				<div className={styles.main}>
+					<ChartScrollContainer>
+						<div className={styles.inner}>
+							<svg
+								className={styles.canvas}
+								viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+								style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}
+							>
+								<ChartDataMask />
+								<ChartTimeAxis />
+								{ displayData.map(({ color, dataPoints, index }) => (
+									<ChartDataPoints
+										dataPoints={dataPoints}
+										color={color}
+										index={index}
+										key={index}
+									/>
+								)) }
+							</svg>
+							<ChartValueZones values={values} />
+							<ChartHighlightMarker value={highlightedValue} />
+						</div>
+					</ChartScrollContainer>
+					<svg
+						className={styles.valueAxis}
+						viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}
+						style={{ width: `${chartLeftWidth}px`, height: `${chartHeight}px` }}
+					>
+						<ChartValueAxis />
+					</svg>
+					<ChartHighlightInfo
+						isSingle={isSingle}
+						value={highlightedValue}
+					/>
+				</div>
 				<ChartLegend tracks={legendList} />
 			</ChartData>
 		</div>
