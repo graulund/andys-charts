@@ -1,8 +1,12 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+/*
+// Install: @testing-library/jest-dom @testing-library/react @testing-library/user-event
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+import { render, screen } from "@testing-library/react";
+import App from "./App";
+
+test("renders learn react link", () => {
+	render(<App />);
+	const linkElement = screen.getByText(/learn react/i);
+	expect(linkElement).toBeInTheDocument();
 });
+*/
