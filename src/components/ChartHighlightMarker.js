@@ -6,11 +6,7 @@ import ChartContext from "./ChartContext";
 import styles from "./ChartHighlightMarker.module.css";
 
 function ChartHighlightMarker({ value }) {
-	const {
-		getXPositionFromYmd,
-		getYBottomPosition,
-		getYPosition
-	} = useContext(ChartContext);
+	const { getXPositionFromYmd, getYPosition } = useContext(ChartContext);
 
 	// Return an element even if no value, for performance reasons
 

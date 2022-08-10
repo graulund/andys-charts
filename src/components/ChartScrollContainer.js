@@ -40,6 +40,9 @@ function ChartScrollContainer({ children }) {
 		el.addEventListener("scroll", onScroll);
 
 		return () => el.removeEventListener("scroll", onScroll);
+
+		// (Should only run on mount)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

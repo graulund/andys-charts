@@ -15,7 +15,6 @@ function ChartHighlightInfo({ isSingle, value }) {
 		config,
 		getXPositionFromDate,
 		getYBottomPosition,
-		getYPosition,
 		scrollLeft
 	} = useContext(ChartContext);
 
