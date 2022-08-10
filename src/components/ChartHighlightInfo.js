@@ -8,6 +8,7 @@ import styles from "./ChartHighlightInfo.module.css";
 
 const infoHorizontalOffset = -16;
 const infoVerticalOffset = 70; // 20;
+const infoApproxWidth = 200;
 
 function ChartHighlightInfo({ isSingle, value }) {
 	const {
@@ -29,6 +30,8 @@ function ChartHighlightInfo({ isSingle, value }) {
 	const titles = value?.titles || [];
 	const indexes = value?.indexes || [];
 	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
+	const maxX = window.innerWidth - infoApproxWidth;
+	// TODO: Use actual width somehow(?)
 
 	// Displaying a marker and info bubble
 
@@ -37,7 +40,7 @@ function ChartHighlightInfo({ isSingle, value }) {
 		y = getYBottomPosition(plays) + infoVerticalOffset;
 
 		const date = dateFromYmd(ymd);
-		x = getXPositionFromDate(date) + infoHorizontalOffset - scrollLeft;
+		x = Math.min(maxX, getXPositionFromDate(date) + infoHorizontalOffset - scrollLeft);
 
 		if (language === "da") {
 			const playsName = plays === 1 ? "afspilning" : "afspilninger";
