@@ -5,7 +5,9 @@ import ChartData from "./ChartData";
 import ChartDataMask from "./ChartDataMask";
 import ChartDataPoints from "./ChartDataPoints";
 import ChartHighlightInfo from "./ChartHighlightInfo";
+import ChartHighlightMarker from "./ChartHighlightMarker";
 import ChartLegend from "./ChartLegend";
+import ChartScrollContainer from "./ChartScrollContainer";
 import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
 import ChartValueZones from "./ChartValueZones";
@@ -50,6 +52,7 @@ const defaultConfig = {
 function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
 	const [highlightedIndex, setHighlightedIndex] = useState(null);
+	const [scrollLeft, setScrollLeft] = useState(0);
 	const config = useMemo(() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]);
 
 	const {
@@ -130,8 +133,10 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		maxValue,
 		highlightedIndex,
 		highlightedValueKey,
+		scrollLeft,
 		setHighlightedIndex,
 		setHighlightedValueKey,
+		setScrollLeft,
 		totalDays
 	}), [
 		config,
@@ -142,8 +147,10 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		maxValue,
 		highlightedIndex,
 		highlightedValueKey,
+		scrollLeft,
 		setHighlightedIndex,
 		setHighlightedValueKey,
+		setScrollLeft,
 		totalDays
 	]);
 
@@ -196,7 +203,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	return (
 		<div className={styles.chart} aria-label="Line chart">
 			<ChartData {...chartData}>
-				<div className={styles.mainContainer}>
+				<ChartScrollContainer>
 					<div className={styles.inner}>
 						<svg
 							className={styles.canvas}
@@ -215,8 +222,9 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 							)) }
 						</svg>
 						<ChartValueZones values={values} />
+						<ChartHighlightMarker value={highlightedValue} />
 					</div>
-				</div>
+				</ChartScrollContainer>
 				<svg
 					className={styles.valueAxis}
 					viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}

@@ -7,10 +7,6 @@
 	position: relative;
 }
 
-.mainContainer {
-	overflow-x: auto;
-}
-
 .canvas {
 	display: block;
 }

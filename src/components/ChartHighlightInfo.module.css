@@ -31,17 +31,3 @@
 	color: #666;
 	margin: 0;
 }
-
-.marker {
-	position: absolute;
-	width: 10px;
-	height: 10px;
-	margin-left: -5px;
-	margin-top: -5px;
-	background-color: #111;
-	border-radius: 99px;
-}
-
-.noMarker {
-	display: none;
-}

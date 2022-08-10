@@ -7,14 +7,15 @@ import { dateFromYmd, formatDate } from "../lib/time";
 import styles from "./ChartHighlightInfo.module.css";
 
 const infoHorizontalOffset = -16;
-const infoVerticalOffset = 20;
+const infoVerticalOffset = 70; // 20;
 
 function ChartHighlightInfo({ isSingle, value }) {
 	const {
 		config,
 		getXPositionFromDate,
 		getYBottomPosition,
-		getYPosition
+		getYPosition,
+		scrollLeft
 	} = useContext(ChartContext);
 
 	const { language } = config;
@@ -22,27 +23,21 @@ function ChartHighlightInfo({ isSingle, value }) {
 	// Return an element even if no value, for performance reasons
 
 	let playInfoString = "";
-	let infoX = 0;
-	let infoY = 0;
-	let markerX = 0;
-	let markerY = 0;
+	let x = 0;
+	let y = 0;
 
 	const titles = value?.titles || [];
 	const indexes = value?.indexes || [];
 	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
-	const markerClassName = value ? styles.marker : [styles.marker, styles.noMarker].join(" ");
 
 	// Displaying a marker and info bubble
 
 	if (value) {
 		const { date: ymd, plays } = value;
-
-		markerY = getYPosition(plays);
-		infoY = getYBottomPosition(plays) + infoVerticalOffset;
+		y = getYBottomPosition(plays) + infoVerticalOffset;
 
 		const date = dateFromYmd(ymd);
-		markerX = getXPositionFromDate(date) + 0.5;
-		infoX = markerX + infoHorizontalOffset;
+		x = getXPositionFromDate(date) + infoHorizontalOffset - scrollLeft;
 
 		if (language === "da") {
 			const playsName = plays === 1 ? "afspilning" : "afspilninger";
@@ -54,27 +49,21 @@ function ChartHighlightInfo({ isSingle, value }) {
 	}
 
 	return (
-		<>
-			<div
-				className={infoClassName}
-				style={{ left: `${infoX}px`, bottom: `${infoY}px` }}
-			>
-				{ !isSingle ? (
-					<ul className={styles.tracks}>
-						{ titles.map((title, i) => (
-							<li key={indexes[i]}>{ title }</li>
-						)) }
-					</ul>
-				) : null }
-				<p className={styles.playInfo}>
-					{ playInfoString }
-				</p>
-			</div>
-			<div
-				className={markerClassName}
-				style={{ left: `${markerX}px`, top: `${markerY}px` }}
-			/>
-		</>
+		<div
+			className={infoClassName}
+			style={{ left: `${x}px`, bottom: `${y}px` }}
+		>
+			{ !isSingle ? (
+				<ul className={styles.tracks}>
+					{ titles.map((title, i) => (
+						<li key={indexes[i]}>{ title }</li>
+					)) }
+				</ul>
+			) : null }
+			<p className={styles.playInfo}>
+				{ playInfoString }
+			</p>
+		</div>
 	);
 }
 

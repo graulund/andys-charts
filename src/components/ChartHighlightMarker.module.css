@@ -1,0 +1,14 @@
+.marker {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	margin-left: -5px;
+	margin-top: -5px;
+	background-color: #111;
+	border-radius: 99px;
+	pointer-events: none;
+}
+
+.noMarker {
+	display: none;
+}
