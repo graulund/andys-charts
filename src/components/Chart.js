@@ -24,24 +24,25 @@ import { dateFromYmd, daysBetweenDates } from "../lib/time";
 import styles from "./Chart.module.css";
 
 const defaultConfig = {
-	todayYmd: "",
-	overrideStartYmd: "",
-	overrideEndYmd: "",
-	showEndFirst: true,
-	maxDays: 183,
-	minDays: 10,
-	maxEndPaddingDays: 5,
-	chartWidth: 1000,
-	chartHeight: 145,
-	minMaxPlays: 4,
-	minValues: 2,
-	chartTopHeight: 4,
 	chartBottomHeight: 14,
+	chartHeight: 145,
 	chartLeftWidth: 18,
+	chartTopHeight: 4,
+	chartWidth: 1000,
+	dataMaskId: "andy-chart-data-mask",
+	isSingle: false,
 	language: "da",
 	linkMainClassName: "",
-	dataMaskId: "andy-chart-data-mask",
+	maxDays: 183,
+	maxEndPaddingDays: 5,
+	minDays: 10,
+	minMaxPlays: 4,
+	minValues: 2,
+	overrideEndYmd: "",
+	overrideStartYmd: "",
+	showEndFirst: true,
 	singleColor: "#3faa9e",
+	todayYmd: "",
 	colors: [
 		"#3faa9e", // Seafoam
 		"#b7000c", // Red
@@ -66,6 +67,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		chartTopHeight,
 		chartWidth,
 		colors,
+		isSingle,
 		minMaxPlays,
 		minValues,
 		singleColor
@@ -183,8 +185,6 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	// Display data for chart and legend
 
-	const isSingle = dataSets.length === 1;
-
 	const displayData = dataPointLists.map((dataPoints, i) => ({
 		color: isSingle ? singleColor : colors[i % colors.length],
 		dataPoints,
@@ -237,10 +237,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 					>
 						<ChartValueAxis />
 					</svg>
-					<ChartHighlightInfo
-						isSingle={isSingle}
-						value={highlightedValue}
-					/>
+					<ChartHighlightInfo value={highlightedValue} />
 				</div>
 				<ChartLegend tracks={legendList} />
 			</ChartData>

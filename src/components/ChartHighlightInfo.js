@@ -10,7 +10,7 @@ const infoHorizontalOffset = -16;
 const infoVerticalOffset = 20;
 const windowWidthBuffer = 250;
 
-function ChartHighlightInfo({ isSingle, value }) {
+function ChartHighlightInfo({ value }) {
 	const {
 		config,
 		getXPositionFromDate,
@@ -18,7 +18,7 @@ function ChartHighlightInfo({ isSingle, value }) {
 		scrollLeft
 	} = useContext(ChartContext);
 
-	const { language } = config;
+	const { isSingle, language } = config;
 
 	// Return an element even if no value, for performance reasons
 
@@ -69,7 +69,6 @@ function ChartHighlightInfo({ isSingle, value }) {
 }
 
 ChartHighlightInfo.propTypes = {
-	isSingle: PropTypes.bool.isRequired,
 	value: PropTypes.shape({
 		date: PropTypes.string,
 		plays: PropTypes.number,
@@ -78,7 +77,6 @@ ChartHighlightInfo.propTypes = {
 };
 
 ChartHighlightInfo.defaultProps = {
-	isSingle: false,
 	value: null
 };
 

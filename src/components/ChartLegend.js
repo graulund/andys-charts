@@ -13,11 +13,11 @@ function ChartLegend({ tracks }) {
 		setHighlightedIndex // set highlighted dataset
 	} = useContext(ChartContext);
 
-	if (tracks.length <= 1) {
+	const { isSingle, language, linkMainClassName } = config;
+
+	if (isSingle) {
 		return null;
 	}
-
-	const { language, linkMainClassName } = config;
 
 	const mainClassList = [styles.itemMain];
 
