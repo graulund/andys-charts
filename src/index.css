@@ -9,3 +9,7 @@ body.andys-charts-debug .andy-chart-root {
 	margin: 100px auto;
 	background-color: #fff;
 }
+
+body.andys-charts-debug .andy-chart-root:empty {
+	margin: 0 auto;
+}
