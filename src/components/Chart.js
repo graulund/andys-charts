@@ -39,6 +39,7 @@ const defaultConfig = {
 	chartBottomHeight: 14,
 	chartLeftWidth: 18,
 	language: "da",
+	linkMainClassName: "",
 	dataMaskId: "andy-chart-data-mask",
 	singleColor: "#3faa9e",
 	colors: [

@@ -17,7 +17,15 @@ function ChartLegend({ tracks }) {
 		return null;
 	}
 
-	const { language } = config;
+	const { language, linkMainClassName } = config;
+
+	const mainClassList = [styles.itemMain];
+
+	if (linkMainClassName) {
+		mainClassList.push(linkMainClassName);
+	}
+
+	const mainClassName = mainClassList.join(" ");
 
 	return (
 		<div className={styles.legend} aria-label="Legend">
@@ -41,7 +49,7 @@ function ChartLegend({ tracks }) {
 								<TrackTitleDisplay
 									artists={artists}
 									language={language}
-									mainClassName={styles.itemMain}
+									mainClassName={mainClassName}
 									title={title}
 								/>
 							</a>
