@@ -27,6 +27,7 @@ const defaultConfig = {
 	todayYmd: "",
 	overrideStartYmd: "",
 	overrideEndYmd: "",
+	showEndFirst: true,
 	maxDays: 183,
 	minDays: 10,
 	maxEndPaddingDays: 5,

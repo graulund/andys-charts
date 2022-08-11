@@ -69,6 +69,12 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		prefix = (
 			<>
 				<ArtistList artists={artists.main} />
+				{ artists.feat ? (
+					<>
+						{ " featuring " }
+						<ArtistList artists={artists.feat} />
+					</>
+				) : null }
 				{" – "}
 			</>
 		);
@@ -94,7 +100,7 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		));
 	}
 
-	if (artists?.feat) {
+	if (artists?.feat && !artists.main) {
 		suffix.push((
 			<>
 				{ "featuring " }

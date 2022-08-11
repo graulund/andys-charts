@@ -9,7 +9,7 @@ function ChartScrollContainer({ children }) {
 	const containerEl = useRef(null);
 
 	const { config, setScrollLeft } = useContext(ChartContext);
-	const { chartWidth } = config;
+	const { chartWidth, showEndFirst } = config;
 
 	const onScroll = () => {
 		const el = containerEl.current;
@@ -28,13 +28,15 @@ function ChartScrollContainer({ children }) {
 			return;
 		}
 
-		const { width } = el.getBoundingClientRect();
-		const endPos = chartWidth - width;
+		// On mount, scroll all the way to the right, if you prefer it
 
-		// On mount, scroll all the way to the right
+		if (showEndFirst) {
+			const { width } = el.getBoundingClientRect();
+			const endPos = chartWidth - width;
 
-		if (endPos > 0) {
-			el.scrollTo(endPos, 0);
+			if (endPos > 0) {
+				el.scrollTo(endPos, 0);
+			}
 		}
 
 		el.addEventListener("scroll", onScroll);
