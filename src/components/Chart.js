@@ -30,6 +30,7 @@ const defaultConfig = {
 	chartTopHeight: 4,
 	chartWidth: 1000,
 	dataMaskId: "andy-chart-data-mask",
+	fillOpacity: .4,
 	isSingle: false,
 	language: "da",
 	linkMainClassName: "",
@@ -42,6 +43,7 @@ const defaultConfig = {
 	overrideStartYmd: "",
 	showEndFirst: true,
 	singleColor: "#3faa9e",
+	singleFillOpacity: .4,
 	todayYmd: "",
 	colors: [
 		"#3faa9e", // Seafoam
@@ -67,10 +69,12 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		chartTopHeight,
 		chartWidth,
 		colors,
+		fillOpacity,
 		isSingle,
 		minMaxPlays,
 		minValues,
-		singleColor
+		singleColor,
+		singleFillOpacity
 	} = config;
 
 	// Calculate chart area
@@ -204,6 +208,8 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		url
 	}));
 
+	const fillOpacityValue = isSingle ? singleFillOpacity : fillOpacity;
+
 	return (
 		<div className={styles.chart} aria-label="Line chart">
 			<ChartData {...chartData}>
@@ -221,6 +227,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 									<ChartDataPoints
 										dataPoints={dataPoints}
 										color={color}
+										fillOpacity={fillOpacityValue}
 										index={index}
 										key={index}
 									/>

@@ -10,7 +10,7 @@ import styles from "./ChartDataPoints.module.css";
 
 const minDaysForThinLines = 300;
 
-function ChartDataPointsSegment({ color, dataPoints, index }) {
+function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 	const {
 		config,
 		firstDate,
@@ -107,6 +107,7 @@ function ChartDataPointsSegment({ color, dataPoints, index }) {
 
 	const faded = typeof highlightedIndex === "number" && highlightedIndex !== index;
 	const colorAttr = !faded ? color : undefined;
+	const areaOpacity = !faded ? fillOpacity : undefined;
 
 	const areaClassName = clsx(styles.area, {
 		[styles.fadedArea]: faded
@@ -123,6 +124,7 @@ function ChartDataPointsSegment({ color, dataPoints, index }) {
 				className={areaClassName}
 				d={areaPath}
 				fill={colorAttr}
+				opacity={areaOpacity}
 				mask={maskSelector}
 			/>
 			<path
@@ -141,6 +143,7 @@ ChartDataPointsSegment.propTypes = {
 		date: PropTypes.string,
 		plays: PropTypes.number
 	})).isRequired,
+	fillOpacity: PropTypes.number.isRequired,
 	index: PropTypes.number.isRequired
 };
 

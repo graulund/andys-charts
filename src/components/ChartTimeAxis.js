@@ -43,6 +43,9 @@ function ChartTimeAxis() {
 	const monthCount = months.length;
 	let monthFormatStyle = "normal";
 
+	// TODO: This should depend on chart width
+	// (on 700px chart width, 16-ish months (or maybe even less) should be tiny)
+
 	if (monthCount >= 20) {
 		monthFormatStyle = "tiny";
 	} else if (monthCount >= 12) {
