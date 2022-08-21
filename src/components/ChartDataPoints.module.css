@@ -1,7 +1,3 @@
-.area {
-	opacity: .4;
-}
-
 .area.fadedArea {
 	opacity: 0;
 }
