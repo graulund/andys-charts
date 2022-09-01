@@ -70,7 +70,6 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		chartWidth,
 		colors,
 		fillOpacity,
-		isSingle,
 		minMaxPlays,
 		minValues,
 		singleColor,
@@ -187,10 +186,15 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		return null;
 	}
 
+	// This is *not* the same as the `isSingle` config value, which has more repercussions
+	// This is if a view of a group of tracks just happen to contain *one* track
+
+	const hasSingleItem = dataPointLists.length === 1;
+
 	// Display data for chart and legend
 
 	const displayData = dataPointLists.map((dataPoints, i) => ({
-		color: isSingle ? singleColor : colors[i % colors.length],
+		color: hasSingleItem ? singleColor : colors[i % colors.length],
 		dataPoints,
 		index: i
 	}));
@@ -202,13 +206,13 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	const legendList = dataSets.map(({ artists, title, url }, i) => ({
 		artists,
-		color: isSingle ? singleColor : colors[i % colors.length],
+		color: hasSingleItem ? singleColor : colors[i % colors.length],
 		index: i,
 		title,
 		url
 	}));
 
-	const fillOpacityValue = isSingle ? singleFillOpacity : fillOpacity;
+	const fillOpacityValue = hasSingleItem ? singleFillOpacity : fillOpacity;
 
 	return (
 		<div className={styles.chart} aria-label="Line chart">
