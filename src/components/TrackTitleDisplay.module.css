@@ -1,10 +1,16 @@
 .main {
-	/* color: #555; */
-	/* color: #1c887c; */
 	color: #666;
 	font-weight: bold;
 }
 
+.main.darkMain {
+	color: #ccc;
+}
+
 .artist {
 	color: #777;
+}
+
+.darkContainer .artist {
+	color: #aaa;
 }

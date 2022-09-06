@@ -12,3 +12,7 @@
 .noMarker {
 	display: none;
 }
+
+.darkMarker {
+	background-color: #fff;
+}

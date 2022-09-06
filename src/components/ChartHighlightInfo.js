@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 
 import ChartContext from "./ChartContext";
 import { dateFromYmd, formatDate } from "../lib/time";
@@ -28,8 +29,11 @@ function ChartHighlightInfo({ value }) {
 
 	const titles = value?.titles || [];
 	const indexes = value?.indexes || [];
-	const infoClassName = value ? styles.info : [styles.info, styles.noInfo].join(" ");
 	const maxX = window.innerWidth - windowWidthBuffer;
+
+	const infoClassName = clsx(styles.info, {
+		[styles.noInfo]: !value
+	});
 
 	// Displaying a marker and info bubble
 

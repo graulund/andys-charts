@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
@@ -30,6 +31,7 @@ function ChartTimeAxis() {
 	const {
 		chartLeftWidth: offsetLeft,
 		chartTopHeight: offsetTop,
+		dark,
 		language
 	} = config;
 
@@ -81,9 +83,13 @@ function ChartTimeAxis() {
 		setHideFirstLabel(actualWidth >= spaceWidth + tickTextMinRightPadding);
 	}, [calculateTickPos, firstLabelEl, months]);
 
+	const lineClassName = clsx(styles.axisLine, {
+		[styles.darkAxisLine]: dark
+	});
+
 	return (
 		<>
-			<path className={styles.axisLine} d={axisPath.toString()} />
+			<path className={lineClassName} d={axisPath.toString()} />
 			{ months.map(({ year, month, ymd }, index) => {
 				// Render each tick, and tick value
 				const tickPos = calculateTickPos(ymd);
@@ -97,13 +103,14 @@ function ChartTimeAxis() {
 					year, month, prevMonth?.year || 0, language, monthFormatStyle
 				);
 
-				const labelClassName = index === 0 && hideFirstLabel
-					? [styles.axisLabel, styles.hiddenLabel].join(" ")
-					: styles.axisLabel;
+				const labelClassName = clsx(styles.axisLabel, {
+					[styles.darkAxisLabel]: dark,
+					[styles.hiddenLabel]: index === 0 && hideFirstLabel
+				});
 
 				return (
 					<React.Fragment key={ymd}>
-						<path className={styles.axisLine} d={tickPath.toString()} />
+						<path className={lineClassName} d={tickPath.toString()} />
 						<text
 							className={labelClassName}
 							x={tickPos}

@@ -13,3 +13,11 @@ body.andys-charts-debug .andy-chart-root {
 body.andys-charts-debug .andy-chart-root:empty {
 	margin: 0 auto;
 }
+
+body.andys-charts-debug--dark {
+	background-color: #444;
+}
+
+body.andys-charts-debug .andy-chart-root--dark {
+	background-color: #111;
+}

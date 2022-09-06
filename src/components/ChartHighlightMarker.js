@@ -1,12 +1,17 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 
 import ChartContext from "./ChartContext";
 
 import styles from "./ChartHighlightMarker.module.css";
 
 function ChartHighlightMarker({ value }) {
-	const { getXPositionFromYmd, getYPosition } = useContext(ChartContext);
+	const {
+		config: { dark },
+		getXPositionFromYmd,
+		getYPosition
+	} = useContext(ChartContext);
 
 	// Return an element even if no value, for performance reasons
 
@@ -21,7 +26,10 @@ function ChartHighlightMarker({ value }) {
 		x = getXPositionFromYmd(ymd) + 0.5;
 	}
 
-	const className = value ? styles.marker : [styles.marker, styles.noMarker].join(" ");
+	const className = clsx(styles.marker, {
+		[styles.darkMarker]: dark,
+		[styles.noMarker]: !value
+	});
 
 	return (
 		<div

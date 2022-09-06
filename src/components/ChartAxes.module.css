@@ -4,15 +4,21 @@
 	fill: none;
 }
 
+.axisLine.darkAxisLine {
+	stroke: #444;
+}
+
 .axisLabel {
 	fill: #aaa;
 	font-size: 11px;
 }
 
 .axisValueLabel {
-	fill: #aaa;
-	font-size: 11px;
 	text-anchor: end;
+}
+
+.axisLabel.darkAxisLabel {
+	fill: #666;
 }
 
 .axisLabel.hiddenLabel {

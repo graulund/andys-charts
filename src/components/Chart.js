@@ -24,11 +24,13 @@ import { dateFromYmd, daysBetweenDates } from "../lib/time";
 import styles from "./Chart.module.css";
 
 const defaultConfig = {
+	backgroundColor: "#fff",
 	chartBottomHeight: 14,
 	chartHeight: 145,
 	chartLeftWidth: 18,
 	chartTopHeight: 4,
 	chartWidth: 1000,
+	dark: false,
 	dataMaskId: "andy-chart-data-mask",
 	fillOpacity: .4,
 	isSingle: false,
@@ -63,6 +65,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	const config = useMemo(() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]);
 
 	const {
+		backgroundColor,
 		chartBottomHeight,
 		chartHeight,
 		chartLeftWidth,
@@ -244,7 +247,11 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 					<svg
 						className={styles.valueAxis}
 						viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}
-						style={{ width: `${chartLeftWidth}px`, height: `${chartHeight}px` }}
+						style={{
+							backgroundColor,
+							width: `${chartLeftWidth}px`,
+							height: `${chartHeight}px`
+						}}
 					>
 						<ChartValueAxis />
 					</svg>

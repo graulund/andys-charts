@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 
 import ChartContext from "./ChartContext";
 import TrackTitleDisplay from "./TrackTitleDisplay";
@@ -13,19 +14,17 @@ function ChartLegend({ tracks }) {
 		setHighlightedIndex // set highlighted dataset
 	} = useContext(ChartContext);
 
-	const { isSingle, language, linkMainClassName } = config;
+	const { dark, isSingle, language, linkMainClassName } = config;
 
 	if (isSingle) {
 		return null;
 	}
 
-	const mainClassList = [styles.itemMain];
+	const itemClassName = clsx(styles.item, {
+		[styles.darkItem]: dark
+	});
 
-	if (linkMainClassName) {
-		mainClassList.push(linkMainClassName);
-	}
-
-	const mainClassName = mainClassList.join(" ");
+	const mainClassName = clsx(styles.itemMain, linkMainClassName);
 
 	return (
 		<div className={styles.legend} aria-label="Legend">
@@ -37,22 +36,26 @@ function ChartLegend({ tracks }) {
 						}
 					};
 
+					const ItemComponent = url ? "a" : "span";
+					const itemProps = url ? { href: url } : {};
+
 					return (
 						<li className={styles.listItem} key={index}>
-							<a
-								className={styles.item}
-								href={url}
+							<ItemComponent
+								className={itemClassName}
+								{...itemProps}
 								style={{ borderColor: color }}
 								onMouseOver={() => setHighlightedIndex(index)}
 								onMouseOut={mouseOut}
 							>
 								<TrackTitleDisplay
 									artists={artists}
+									dark={dark}
 									language={language}
 									mainClassName={mainClassName}
 									title={title}
 								/>
-							</a>
+							</ItemComponent>
 						</li>
 					);
 				}) }

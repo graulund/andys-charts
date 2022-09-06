@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import clsx from "clsx";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
@@ -31,7 +32,8 @@ function ChartValueAxis() {
 
 	const {
 		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop
+		chartTopHeight: offsetTop,
+		dark
 	} = config;
 
 	// Vertical axis line
@@ -48,9 +50,17 @@ function ChartValueAxis() {
 		tickRange = getEvens(tickRange);
 	}
 
+	const lineClassName = clsx(styles.axisLine, {
+		[styles.darkAxisLine]: dark
+	});
+
+	const labelClassName = clsx(styles.axisLabel, styles.axisValueLabel, {
+		[styles.darkAxisLabel]: dark
+	});
+
 	return (
 		<>
-			<path className={styles.axisLine} d={axisPath.toString()} />
+			<path className={lineClassName} d={axisPath.toString()} />
 			{ tickRange.map((val) => {
 				// Render each tick, and tick value
 				const tickHeight = getYPosition(val);
@@ -60,9 +70,9 @@ function ChartValueAxis() {
 
 				return (
 					<React.Fragment key={val}>
-						<path className={styles.axisLine} d={tickPath.toString()} />
+						<path className={lineClassName} d={tickPath.toString()} />
 						<text
-							className={styles.axisValueLabel}
+							className={labelClassName}
 							x={offsetLeft + tickTextOffsetLeft}
 							y={tickHeight + tickTextOffsetTop}
 						>

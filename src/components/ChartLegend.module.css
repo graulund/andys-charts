@@ -26,10 +26,15 @@
 	font-weight: normal;
 }
 
+.item.darkItem {
+	border-left-color: #ccc;
+	color: #777;
+}
+
 .item, .item:hover {
 	text-decoration: none;
 }
 
-.item:hover .itemMain {
+a.item:hover .itemMain {
 	text-decoration: underline;
 }

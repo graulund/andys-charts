@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import clsx from "clsx";
 
 import styles from "./TrackTitleDisplay.module.css";
 
@@ -62,7 +63,7 @@ ArtistList.propTypes = {
 	})).isRequired
 };
 
-function TrackTitleDisplay({ artists, language, mainClassName, title }) {
+function TrackTitleDisplay({ artists, dark, language, mainClassName, title }) {
 	let prefix = null;
 
 	if (artists?.main) {
@@ -109,16 +110,16 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 		));
 	}
 
-	const mainClassList = [styles.main];
+	const containerClassName = clsx({ [styles.darkContainer]: dark });
 
-	if (mainClassName) {
-		mainClassList.push(mainClassName);
-	}
+	const titleClassName = clsx(styles.main, mainClassName, {
+		[styles.darkMain]: dark
+	});
 
 	return (
-		<>
+		<span className={containerClassName}>
 			{ prefix }
-			<span className={mainClassList.join(" ")}>
+			<span className={titleClassName}>
 				{ title }
 			</span>
 			{ suffix.length > 0 ? (
@@ -133,12 +134,13 @@ function TrackTitleDisplay({ artists, language, mainClassName, title }) {
 					{")"}
 				</>
 			) : null }
-		</>
+		</span>
 	);
 }
 
 TrackTitleDisplay.propTypes = {
 	artists: PropTypes.object,
+	dark: PropTypes.bool,
 	language: PropTypes.string,
 	mainClassName: PropTypes.string,
 	title: PropTypes.string.isRequired
@@ -146,6 +148,7 @@ TrackTitleDisplay.propTypes = {
 
 TrackTitleDisplay.defaultProps = {
 	artists: null,
+	dark: false,
 	language: "en",
 	mainClassName: undefined
 };

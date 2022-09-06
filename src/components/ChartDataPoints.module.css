@@ -11,6 +11,10 @@
 	stroke: rgba(0, 0, 0, .125);
 }
 
+.line.fadedLine.darkLine {
+	stroke: rgba(255, 255, 255, .125);
+}
+
 .line.thinLine {
 	stroke-width: 1;
 }

@@ -23,6 +23,7 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 
 	const {
 		chartTopHeight: offsetTop,
+		dark,
 		dataMaskId
 	} = config;
 
@@ -114,6 +115,7 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 	});
 
 	const lineClassName = clsx(styles.line, {
+		[styles.darkLine]: dark,
 		[styles.fadedLine]: faded,
 		[styles.thinLine]: manyDays
 	});
