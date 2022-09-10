@@ -75,8 +75,9 @@ function ChartHighlightInfo({ value }) {
 ChartHighlightInfo.propTypes = {
 	value: PropTypes.shape({
 		date: PropTypes.string,
+		indexes: PropTypes.arrayOf(PropTypes.number),
 		plays: PropTypes.number,
-		titles: PropTypes.array
+		titles: PropTypes.arrayOf(PropTypes.string)
 	})
 };
 

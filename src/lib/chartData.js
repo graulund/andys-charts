@@ -102,8 +102,8 @@ export function padChartDataPoints(dataPoints, startDate, endDate) {
 	}
 
 	const playsMap = convertDataPointsToDateMap(dataPoints);
+	const out = [];
 	let current = startDate;
-	let out = [];
 
 	while (current <= endDate) {
 		const ymd = ymdFromDate(current);

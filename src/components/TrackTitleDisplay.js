@@ -81,7 +81,7 @@ function TrackTitleDisplay({ artists, dark, language, mainClassName, title }) {
 		);
 	}
 
-	let suffix = [];
+	const suffix = [];
 
 	if (artists?.as) {
 		suffix.push((
