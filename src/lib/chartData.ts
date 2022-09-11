@@ -5,20 +5,58 @@ import {
 	prevDay,
 	nextDay,
 	todayDate
-} from "./time";
+} from "./time.ts";
 
-function chartDataItem(date, plays) {
+interface TrackArtist {
+	name: string,
+	id: number
+}
+
+interface TrackArtists {
+	main?: TrackArtist[],
+	with?: TrackArtist[],
+	feat?: TrackArtist[],
+	as?: TrackArtist
+}
+
+interface ChartDataSetBase {
+	title: string,
+	artists?: TrackArtists,
+	url?: string
+}
+
+interface ChartDataSet extends ChartDataSetBase {
+	dataPoints: ChartDataItem[]
+}
+
+interface CompressedChartDataSet extends ChartDataSetBase {
+	dataPoints: CompressedChartDataItem[]
+}
+
+interface ChartDataItem {
+	date: string,
+	plays: number
+}
+
+interface ChartDataMap {
+	[date: string]: number
+}
+
+type CompressedChartDataItem = [string, number];
+
+function chartDataItem(date: string, plays: number): ChartDataItem {
 	return { date: ymdFromDate(date), plays };
 }
 
-function convertDataPointsToDateMap(dataPoints) {
+function convertDataPointsToDateMap(dataPoints: ChartDataItem[]): ChartDataMap {
 	return (dataPoints || []).reduce((map, data) => {
 		map[data.date] = data.plays;
 		return map;
 	}, {});
 }
 
-export function padChartDataPointLists(dataPointLists, options) {
+// TODO config type
+export function padChartDataPointLists(dataPointLists: ChartDataItem[][], options: any) {
 	const {
 		maxDays = 183,
 		minDays = 10,
@@ -32,8 +70,8 @@ export function padChartDataPointLists(dataPointLists, options) {
 		return [];
 	}
 
-	let startDate = null;
-	let endDate = null;
+	let startDate: Date = null;
+	let endDate: Date = null;
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
 	// If not overridden, analyze the data's scope (overall earliest and latest play times),
@@ -43,7 +81,7 @@ export function padChartDataPointLists(dataPointLists, options) {
 		startDate = dateFromYmd(overrideStartYmd);
 		endDate = dateFromYmd(overrideEndYmd);
 	} else {
-		const earliestDate = dataPointLists.reduce((extreme, data) => {
+		const earliestDate = dataPointLists.reduce<Date>((extreme, data) => {
 			if (!data?.length) {
 				return extreme;
 			}
@@ -58,7 +96,7 @@ export function padChartDataPointLists(dataPointLists, options) {
 			return extreme;
 		}, null);
 
-		const latestDate = dataPointLists.reduce((extreme, data) => {
+		const latestDate = dataPointLists.reduce<Date>((extreme, data) => {
 			if (!data?.length) {
 				return extreme;
 			}
@@ -77,16 +115,16 @@ export function padChartDataPointLists(dataPointLists, options) {
 		const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
 
 		endDate = new Date(Math.min(
-			latestDateWithPadding,
-			today
+			latestDateWithPadding.getTime(),
+			today.getTime()
 		));
 
 		const minDaysAgo = offsetDate(endDate, -1 * minDays);
 		const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
 
 		startDate = new Date(Math.min(
-			minDaysAgo,
-			Math.max(maxDaysAgo, earliestDateWithPadding)
+			minDaysAgo.getTime(),
+			Math.max(maxDaysAgo.getTime(), earliestDateWithPadding.getTime())
 		));
 	}
 
@@ -95,14 +133,14 @@ export function padChartDataPointLists(dataPointLists, options) {
 		.filter((l) => !!l);
 }
 
-export function padChartDataPoints(dataPoints, startDate, endDate) {
+export function padChartDataPoints(dataPoints: ChartDataItem[], startDate: Date, endDate: Date) {
 	// Pad spaces in data set with 0 play days
 	if (!dataPoints?.length) {
 		return null;
 	}
 
 	const playsMap = convertDataPointsToDateMap(dataPoints);
-	const out = [];
+	const out: ChartDataItem[] = [];
 	let current = startDate;
 
 	while (current <= endDate) {
@@ -114,7 +152,14 @@ export function padChartDataPoints(dataPoints, startDate, endDate) {
 	return out;
 }
 
-export function filterDataSets(dataSets, dataPointLists, minValues = 2) {
+export function filterDataSets(
+	dataSets: ChartDataSet[],
+	dataPointLists: ChartDataItem[][],
+	minValues = 2
+): {
+	dataSets: ChartDataSet[],
+	dataPointLists: ChartDataItem[][]
+} {
 	// Exclude data sets with very few data points (less than 2)
 	return dataPointLists.reduce((out, dataPoints, index) => {
 		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
@@ -128,16 +173,16 @@ export function filterDataSets(dataSets, dataPointLists, minValues = 2) {
 	}, { dataSets: [], dataPointLists: [] });
 }
 
-export function getPaddedDataPointSegments(dataPoints) {
+export function getPaddedDataPointSegments(dataPoints: ChartDataItem[]) {
 	// Split segments of the padded data points list into line segments,
 	// removing any big swaths (>= 2) of contiguous zeroes
 	// (All dates within a segment are guaranteed to be continguous)
 
 	let numZeroes = 0;
-	let lastDataPoint = null;
-	let currentSegment = null;
+	let lastDataPoint: ChartDataItem = null;
+	let currentSegment: ChartDataItem[] = null;
 
-	const segments = dataPoints.reduce((segments, dataPoint, index) => {
+	const segments = dataPoints.reduce<ChartDataItem[][]>((segments, dataPoint, index) => {
 		const { plays } = dataPoint;
 
 		if (plays > 0) {
@@ -182,7 +227,7 @@ export function getPaddedDataPointSegments(dataPoints) {
 	return segments;
 }
 
-export function maxPlays(data) {
+export function maxPlays(data: ChartDataItem[]) {
 	return (data || []).reduce((val, current) => {
 		if (current.plays > val) {
 			return current.plays;
@@ -192,17 +237,17 @@ export function maxPlays(data) {
 	}, 0);
 }
 
-export function getValueKey(date, plays) {
+export function getValueKey(date: string, plays: number) {
 	return `${date}:${plays}`;
 }
 
-export function getValueFromKey(valueKey) {
+export function getValueFromKey(valueKey: string): ChartDataItem {
 	const [date, plays] = valueKey.split(":");
 	return { date, plays: Number(plays) };
 }
 
-export function getAllValues(dataPointLists) {
-	const valuesMap = {};
+export function getAllValues(dataPointLists: ChartDataItem[][]) {
+	const valuesMap: { [valueKey: string]: number[] } = {};
 
 	dataPointLists.forEach((dataPoints, trackIndex) => {
 		dataPoints.forEach(({ date, plays }) => {
@@ -231,14 +276,14 @@ export function getAllValues(dataPointLists) {
 	});
 }
 
-export function unpackCompressedDataPoints(compressedDataPoints) {
+export function unpackCompressedDataPoints(compressedDataPoints: CompressedChartDataItem[]): ChartDataItem[] {
 	return compressedDataPoints.map((data) => {
 		const [date, plays] = data;
 		return { date, plays };
 	});
 }
 
-export function unpackDataPointsInDataSets(dataSets) {
+export function unpackDataPointsInDataSets(dataSets: CompressedChartDataSet[]): ChartDataSet[] {
 	return dataSets.map((data) => {
 		const { dataPoints } = data;
 

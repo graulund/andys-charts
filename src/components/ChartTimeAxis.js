@@ -8,7 +8,7 @@ import {
 	dateFromYmd,
 	formatYearMonth,
 	getAllMonthsBetweenDates
-} from "../lib/time";
+} from "../lib/time.ts";
 
 import styles from "./ChartAxes.module.css";
 

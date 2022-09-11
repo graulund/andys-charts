@@ -17,46 +17,12 @@ import {
 	maxPlays,
 	padChartDataPointLists,
 	getAllValues
-} from "../lib/chartData";
+} from "../lib/chartData.ts";
 
-import { dateFromYmd, daysBetweenDates } from "../lib/time";
+import { defaultConfig } from "../lib/config.ts";
+import { dateFromYmd, daysBetweenDates } from "../lib/time.ts";
 
 import styles from "./Chart.module.css";
-
-const defaultConfig = {
-	backgroundColor: "#fff",
-	chartBottomHeight: 14,
-	chartHeight: 145,
-	chartLeftWidth: 18,
-	chartTopHeight: 4,
-	chartWidth: 1000,
-	dark: false,
-	dataMaskId: "andy-chart-data-mask",
-	fillOpacity: .4,
-	isSingle: false,
-	language: "da",
-	linkMainClassName: "",
-	maxDays: 183,
-	maxEndPaddingDays: 5,
-	minDays: 10,
-	minMaxPlays: 4,
-	minValues: 2,
-	overrideEndYmd: "",
-	overrideStartYmd: "",
-	showEndFirst: true,
-	singleColor: "#3faa9e",
-	singleFillOpacity: .4,
-	todayYmd: "",
-	colors: [
-		"#3faa9e", // Seafoam
-		"#b7000c", // Red
-		"#009107", // Green
-		"#2d61c1", // Blue
-		"#adb100", // Yellow
-		"#b70097", // Purple
-		"#666" // Grey
-	]
-};
 
 function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
