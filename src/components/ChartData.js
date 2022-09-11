@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 
 import ChartContext from "./ChartContext";
-import { dateFromYmd, daysBetweenDates } from "../lib/time.ts";
+import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 function ChartData({ children, ...data }) {
 	const {

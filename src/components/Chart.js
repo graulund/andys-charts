@@ -17,10 +17,10 @@ import {
 	maxPlays,
 	padChartDataPointLists,
 	getAllValues
-} from "../lib/chartData.ts";
+} from "../lib/chartData";
 
-import { defaultConfig } from "../lib/config.ts";
-import { dateFromYmd, daysBetweenDates } from "../lib/time.ts";
+import { defaultConfig } from "../lib/config";
+import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 import styles from "./Chart.module.css";
 

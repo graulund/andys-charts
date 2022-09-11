@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 
 import ChartDataPointsSegment from "./ChartDataPointsSegment";
-import { getPaddedDataPointSegments } from "../lib/chartData.ts";
+import { getPaddedDataPointSegments } from "../lib/chartData";
 
 function ChartDataPoints({ color, dataPoints, fillOpacity, index }) {
 	// Data is assumed to be padded here!

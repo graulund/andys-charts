@@ -5,7 +5,7 @@ import {
 	prevDay,
 	nextDay,
 	todayDate
-} from "./time.ts";
+} from "./time";
 
 interface TrackArtist {
 	name: string,

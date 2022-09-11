@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 
 import ChartContext from "./ChartContext";
-import { dateFromYmd, formatDate } from "../lib/time.ts";
+import { dateFromYmd, formatDate } from "../lib/time";
 
 import styles from "./ChartHighlightInfo.module.css";
 

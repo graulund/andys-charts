@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { path } from "d3-path";
 
 import ChartContext from "./ChartContext";
-import { dateFromYmd, daysBetweenDates } from "../lib/time.ts";
+import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 import styles from "./ChartDataPoints.module.css";
 
