@@ -7,6 +7,8 @@ import {
 	todayDate
 } from "./time";
 
+import { ChartConfig } from "./config";
+
 interface TrackArtist {
 	name: string,
 	id: number
@@ -44,19 +46,23 @@ interface ChartDataMap {
 
 type CompressedChartDataItem = [string, number];
 
+interface FilteredChartDataSetResult {
+	dataSets: ChartDataSet[],
+	dataPointLists: ChartDataItem[][]
+}
+
 function chartDataItem(date: string, plays: number): ChartDataItem {
 	return { date: ymdFromDate(date), plays };
 }
 
 function convertDataPointsToDateMap(dataPoints: ChartDataItem[]): ChartDataMap {
-	return (dataPoints || []).reduce((map, data) => {
+	return (dataPoints || []).reduce<ChartDataMap>((map, data) => {
 		map[data.date] = data.plays;
 		return map;
 	}, {});
 }
 
-// TODO config type
-export function padChartDataPointLists(dataPointLists: ChartDataItem[][], options: any) {
+export function padChartDataPointLists(dataPointLists: ChartDataItem[][], options: Partial<ChartConfig> = {}) {
 	const {
 		maxDays = 183,
 		minDays = 10,
@@ -64,14 +70,14 @@ export function padChartDataPointLists(dataPointLists: ChartDataItem[][], option
 		overrideStartYmd = "",
 		overrideEndYmd = "",
 		todayYmd = ""
-	} = options || {};
+	} = options;
 
 	if (!dataPointLists?.length) {
 		return [];
 	}
 
-	let startDate: Date = null;
-	let endDate: Date = null;
+	let startDate: Date;
+	let endDate: Date;
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
 	// If not overridden, analyze the data's scope (overall earliest and latest play times),
@@ -81,7 +87,7 @@ export function padChartDataPointLists(dataPointLists: ChartDataItem[][], option
 		startDate = dateFromYmd(overrideStartYmd);
 		endDate = dateFromYmd(overrideEndYmd);
 	} else {
-		const earliestDate = dataPointLists.reduce<Date>((extreme, data) => {
+		const earliestDate = dataPointLists.reduce<Date | null>((extreme, data) => {
 			if (!data?.length) {
 				return extreme;
 			}
@@ -96,7 +102,7 @@ export function padChartDataPointLists(dataPointLists: ChartDataItem[][], option
 			return extreme;
 		}, null);
 
-		const latestDate = dataPointLists.reduce<Date>((extreme, data) => {
+		const latestDate = dataPointLists.reduce<Date | null>((extreme, data) => {
 			if (!data?.length) {
 				return extreme;
 			}
@@ -110,6 +116,10 @@ export function padChartDataPointLists(dataPointLists: ChartDataItem[][], option
 
 			return extreme;
 		}, null);
+
+		if (!earliestDate || !latestDate) {
+			return [];
+		}
 
 		const earliestDateWithPadding = prevDay(earliestDate);
 		const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
@@ -135,6 +145,7 @@ export function padChartDataPointLists(dataPointLists: ChartDataItem[][], option
 
 export function padChartDataPoints(dataPoints: ChartDataItem[], startDate: Date, endDate: Date) {
 	// Pad spaces in data set with 0 play days
+	// Note: This function also cuts off all days before the supplied startDate
 	if (!dataPoints?.length) {
 		return null;
 	}
@@ -156,12 +167,9 @@ export function filterDataSets(
 	dataSets: ChartDataSet[],
 	dataPointLists: ChartDataItem[][],
 	minValues = 2
-): {
-	dataSets: ChartDataSet[],
-	dataPointLists: ChartDataItem[][]
-} {
+): FilteredChartDataSetResult {
 	// Exclude data sets with very few data points (less than 2)
-	return dataPointLists.reduce((out, dataPoints, index) => {
+	return dataPointLists.reduce<FilteredChartDataSetResult>((out, dataPoints, index) => {
 		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
 
 		if (hasMinValues) {
@@ -179,8 +187,8 @@ export function getPaddedDataPointSegments(dataPoints: ChartDataItem[]) {
 	// (All dates within a segment are guaranteed to be continguous)
 
 	let numZeroes = 0;
-	let lastDataPoint: ChartDataItem = null;
-	let currentSegment: ChartDataItem[] = null;
+	let lastDataPoint: ChartDataItem | null = null;
+	let currentSegment: ChartDataItem[] | null = null;
 
 	const segments = dataPoints.reduce<ChartDataItem[][]>((segments, dataPoint, index) => {
 		const { plays } = dataPoint;
@@ -206,7 +214,9 @@ export function getPaddedDataPointSegments(dataPoints: ChartDataItem[]) {
 			// Date has no value, and at least two zeroes behind us now
 
 			// Push last zero
-			currentSegment.push(lastDataPoint);
+			if (lastDataPoint) {
+				currentSegment.push(lastDataPoint);
+			}
 
 			// Segment closes
 			segments.push(currentSegment);

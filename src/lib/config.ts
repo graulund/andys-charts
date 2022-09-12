@@ -1,4 +1,4 @@
-interface ChartConfig {
+export interface ChartConfig {
 	readonly backgroundColor: string,
 	readonly chartBottomHeight: number,
 	readonly chartHeight: number,
