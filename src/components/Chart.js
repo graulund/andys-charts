@@ -12,15 +12,9 @@ import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
 import ChartValueZones from "./ChartValueZones";
 
-import {
-	filterDataSets,
-	maxPlays,
-	padChartDataPointLists,
-	getAllValues
-} from "../lib/chartData";
-
+import getChartFacts from "../lib/chartFacts";
 import { defaultConfig } from "../lib/config";
-import { dateFromYmd, daysBetweenDates } from "../lib/time";
+import { getHighlightedValue } from "../lib/pointValues";
 
 import styles from "./Chart.module.css";
 
@@ -39,8 +33,6 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		chartWidth,
 		colors,
 		fillOpacity,
-		minMaxPlays,
-		minValues,
 		singleColor,
 		singleFillOpacity
 	} = config;
@@ -59,45 +51,8 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		totalDays,
 		values
 	} = useMemo(() => {
-		// Pad and limit data
-
-		const paddedLists = padChartDataPointLists(
-			(givenDataSets || []).map(({ dataPoints }) => dataPoints),
-			config
-		);
-
-		// Filter data
-
-		const { dataSets, dataPointLists } = filterDataSets(
-			givenDataSets, paddedLists, minValues
-		);
-
-		// Get scope of data
-
-		const maxValues = dataPointLists.map((list) => maxPlays(list));
-		const maxValue = Math.max(minMaxPlays, ...maxValues);
-		const values = getAllValues(dataPointLists);
-		const firstDataSet = dataPointLists[0];
-		const firstDate = firstDataSet?.[0]?.date;
-		const lastDate = firstDataSet?.[firstDataSet.length - 1]?.date;
-		let totalDays = 0;
-
-		if (firstDate && lastDate) {
-			const start = dateFromYmd(firstDate);
-			const end = dateFromYmd(lastDate);
-			totalDays = daysBetweenDates(start, end);
-		}
-
-		return {
-			dataSets,
-			dataPointLists,
-			firstDate,
-			lastDate,
-			maxValue,
-			totalDays,
-			values
-		};
-	}, [config, minMaxPlays, minValues, givenDataSets]);
+		return getChartFacts(givenDataSets, config);
+	}, [config, givenDataSets]);
 
 	// Data for context
 
@@ -136,14 +91,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	const highlightedValue = useMemo(() => {
 		if (highlightedValueKey) {
-			const value = values.find(({ valueKey }) => valueKey === highlightedValueKey);
-
-			if (value) {
-				return {
-					...value,
-					titles: value.indexes.map((index) => dataSets[index].title)
-				};
-			}
+			return getHighlightedValue(highlightedValueKey, values, dataSets);
 		}
 
 		return null;

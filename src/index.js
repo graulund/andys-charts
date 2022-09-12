@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import Chart from "./components/Chart";
 
-import { unpackDataPointsInDataSets } from "./lib/chartData";
+import { unpackDataPointsInDataSets } from "./lib/compression";
 
 let rendered = false;
 
