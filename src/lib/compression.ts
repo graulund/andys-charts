@@ -3,7 +3,7 @@ import {
 	CompressedChartDataSet,
 	ChartDataItem,
 	CompressedChartDataItem
-} from "./chartData";
+} from "./types";
 
 export function unpackCompressedDataPoints(compressedDataPoints: CompressedChartDataItem[]): ChartDataItem[] {
 	return compressedDataPoints.map((data) => {

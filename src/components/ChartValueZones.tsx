@@ -1,11 +1,15 @@
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext } from "react";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
+import { ChartDataPointValues } from "../lib/types";
 
 import styles from "./ChartValueZones.module.css";
 
-function ChartValueZones({ values }) {
+interface ChartValueZonesProps {
+	values: ChartDataPointValues[];
+}
+
+function ChartValueZones({ values }: ChartValueZonesProps) {
 	const {
 		config,
 		getXPositionFromYmd,
@@ -14,7 +18,7 @@ function ChartValueZones({ values }) {
 		setHighlightedValueKey,
 		unitWidth,
 		unitHeight
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	if (!values?.length) {
 		return null;
@@ -24,7 +28,7 @@ function ChartValueZones({ values }) {
 	const valueZoneLeftMargin = -.5 * unitWidth;
 
 	return (
-		<div className={styles.root}>
+		<div>
 			{ values.map(({ date: ymd, plays }) => {
 				const y = getYPosition(plays);
 				const x = getXPositionFromYmd(ymd);
@@ -59,13 +63,5 @@ function ChartValueZones({ values }) {
 		</div>
 	);
 }
-
-ChartValueZones.propTypes = {
-	values: PropTypes.arrayOf(PropTypes.shape({
-		date: PropTypes.string,
-		plays: PropTypes.number,
-		indexes: PropTypes.array
-	})).isRequired
-};
 
 export default ChartValueZones;

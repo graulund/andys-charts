@@ -3,18 +3,18 @@
 import { ChartConfig } from "./config";
 
 import {
-	ChartDataItem,
-	ChartDataPointValues,
-	ChartDataSet,
 	filterDataSets,
 	padChartDataPointLists
 } from "./chartData";
 
-import {
-	getAllValues
-} from "./pointValues";
-
+import { getAllValues } from "./pointValues";
 import { dateFromYmd, daysBetweenDates } from "./time";
+
+import {
+	ChartDataItem,
+	ChartDataPointValues,
+	ChartDataSet,
+} from "./types";
 
 interface ChartFacts {
 	dataSets: ChartDataSet[];

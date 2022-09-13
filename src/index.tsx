@@ -5,10 +5,15 @@ import "./index.css";
 import Chart from "./components/Chart";
 
 import { unpackDataPointsInDataSets } from "./lib/compression";
+import { CompressedChartData } from "./lib/types";
 
 let rendered = false;
 
-window.createAndyCharts = function (chartData, rootQuerySelector) {
+declare global {
+	interface Window { createAndyCharts: any; }
+}
+
+window.createAndyCharts = function (chartData: CompressedChartData, rootQuerySelector: string) {
 	if (rendered) {
 		console.warn("Tried to create Andy charts, but they were already rendered");
 		return;
@@ -16,9 +21,16 @@ window.createAndyCharts = function (chartData, rootQuerySelector) {
 
 	const { config, dataSets } = chartData;
 
-	const root = ReactDOM.createRoot(document.querySelector(
+	const rootEl = document.querySelector(
 		rootQuerySelector || ".andy-chart-root"
-	));
+	);
+
+	if (!rootEl) {
+		console.warn("Could not initialize Andy charts because the root element did not exist");
+		return;
+	}
+
+	const root = ReactDOM.createRoot(rootEl);
 
 	root.render(
 		<React.StrictMode>

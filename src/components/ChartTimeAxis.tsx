@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import clsx from "clsx";
 import { path } from "d3-path";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 
 import {
 	dateFromYmd,
@@ -16,7 +16,7 @@ const tickTextOffsetTop = 12;
 const tickTextMinRightPadding = 8;
 
 function ChartTimeAxis() {
-	const firstLabelEl = useRef(null);
+	const firstLabelEl = useRef<SVGTextElement>(null);
 	const [hideFirstLabel, setHideFirstLabel] = useState(false);
 
 	const {
@@ -26,7 +26,7 @@ function ChartTimeAxis() {
 		lastDate,
 		mainAreaWidth,
 		mainAreaHeight
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const {
 		chartLeftWidth: offsetLeft,
@@ -55,8 +55,11 @@ function ChartTimeAxis() {
 	}
 
 	const calculateTickPos = useCallback(
-		(ymd) => {
-			const monthDate = new Date(Math.max(start, dateFromYmd(ymd)));
+		(ymd: string) => {
+			const monthDate = new Date(Math.max(
+				start.getTime(), dateFromYmd(ymd).getTime()
+			));
+
 			return getXPositionFromDate(monthDate);
 		},
 		[start, getXPositionFromDate]

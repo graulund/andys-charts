@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 
 const extraTopSpace = 2; // pixels: To allow for stroke edges to peek out over the top
 
@@ -9,7 +9,7 @@ function ChartDataMask() {
 		config,
 		mainAreaWidth,
 		mainAreaHeight
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const {
 		chartLeftWidth: offsetLeft,

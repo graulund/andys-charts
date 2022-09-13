@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import clsx from "clsx";
 import { path } from "d3-path";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 
 import styles from "./ChartAxes.module.css";
 
@@ -11,13 +11,13 @@ const tickTextOffsetTop = 4;
 const tickTextOffsetLeft = -5;
 const maxUnfilteredRangeMax = 10;
 
-function range(start, end) {
+function range(start: number, end: number) {
 	// Both values inclusive
 	const size = end - start;
 	return [...Array(1 + size).keys()].map(i => i + start);
 }
 
-function getEvens(range) {
+function getEvens(range: number[]) {
 	return range.filter((n) => n % 2 === 0);
 }
 
@@ -28,7 +28,7 @@ function ChartValueAxis() {
 		mainAreaHeight,
 		minValue,
 		maxValue
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const {
 		chartLeftWidth: offsetLeft,

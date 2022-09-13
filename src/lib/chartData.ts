@@ -9,61 +9,14 @@ import {
 
 import { ChartConfig } from "./config";
 
-// TODO Create types file
+import {
+	ChartDataItem,
+	ChartDataMap,
+	ChartDataSet,
+	FilteredChartDataSetResult
+} from "./types";
+
 // TODO Rename this file
-
-interface TrackArtist {
-	name: string;
-	id: number;
-}
-
-interface TrackArtists {
-	main?: TrackArtist[];
-	with?: TrackArtist[];
-	feat?: TrackArtist[];
-	as?: TrackArtist;
-}
-
-interface ChartDataSetBase {
-	title: string;
-	artists?: TrackArtists;
-	url?: string;
-}
-
-export interface ChartDataSet extends ChartDataSetBase {
-	dataPoints: ChartDataItem[];
-}
-
-export interface CompressedChartDataSet extends ChartDataSetBase {
-	dataPoints: CompressedChartDataItem[];
-}
-
-export interface ChartDataItem {
-	date: string;
-	plays: number;
-}
-
-export type CompressedChartDataItem = [string, number];
-
-interface ChartDataMap {
-	[date: string]: number;
-}
-
-interface FilteredChartDataSetResult {
-	dataSets: ChartDataSet[];
-	dataPointLists: ChartDataItem[][];
-}
-
-export interface ChartDataPointValues {
-	date: string;
-	plays: number;
-	indexes: number[];
-	valueKey: string;
-}
-
-export interface ChartDataPointTitles extends ChartDataPointValues {
-	titles: string[];
-}
 
 function chartDataItem(date: string, plays: number): ChartDataItem {
 	return { date: ymdFromDate(date), plays };

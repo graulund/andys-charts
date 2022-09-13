@@ -1,0 +1,43 @@
+import { useMemo } from "react";
+
+import ChartDataPointsSegment from "./ChartDataPointsSegment";
+import { getPaddedDataPointSegments } from "../lib/chartData";
+import { ChartDataItem } from "../lib/types";
+
+interface ChartDataPointsProps {
+	color: string;
+	dataPoints: ChartDataItem[];
+	fillOpacity: number;
+	index: number;
+}
+
+function ChartDataPoints({
+	color,
+	dataPoints,
+	fillOpacity,
+	index
+}: ChartDataPointsProps) {
+	// Data is assumed to be padded here!
+	// Split into area chart segments
+
+	const segments = useMemo(
+		() => getPaddedDataPointSegments(dataPoints),
+		[dataPoints]
+	);
+
+	return (
+		<>
+			{ segments.map((segment, segmentIndex) => (
+				<ChartDataPointsSegment
+					color={color}
+					dataPoints={segment}
+					fillOpacity={fillOpacity}
+					index={index}
+					key={`${index}-${segmentIndex}`}
+				/>
+			)) }
+		</>
+	);
+}
+
+export default ChartDataPoints;

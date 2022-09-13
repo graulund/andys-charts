@@ -1,17 +1,21 @@
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext } from "react";
 import clsx from "clsx";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 
 import styles from "./ChartHighlightMarker.module.css";
+import { ChartDataPointTitles } from "../lib/types";
 
-function ChartHighlightMarker({ value }) {
+interface ChartHighlightMarkerProps {
+	value?: ChartDataPointTitles;
+}
+
+function ChartHighlightMarker({ value }: ChartHighlightMarkerProps) {
 	const {
 		config: { dark },
 		getXPositionFromYmd,
 		getYPosition
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	// Return an element even if no value, for performance reasons
 
@@ -38,13 +42,6 @@ function ChartHighlightMarker({ value }) {
 		/>
 	);
 }
-
-ChartHighlightMarker.propTypes = {
-	value: PropTypes.shape({
-		date: PropTypes.string,
-		plays: PropTypes.number
-	})
-};
 
 ChartHighlightMarker.defaultProps = {
 	isSingle: false,

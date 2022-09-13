@@ -3,7 +3,7 @@ import {
 	ChartDataPointTitles,
 	ChartDataPointValues,
 	ChartDataSet
-} from "./chartData";
+} from "./types";
 
 export function getValueKey(date: string, plays: number) {
 	return `${date}:${plays}`;
@@ -48,7 +48,7 @@ export function getHighlightedValue(
 	highlightedValueKey: string,
 	values: ChartDataPointValues[],
 	dataSets: ChartDataSet[]
-): ChartDataPointTitles | null {
+): ChartDataPointTitles | undefined {
 	const value = values.find(({ valueKey }) => valueKey === highlightedValueKey);
 
 	if (value) {
@@ -57,6 +57,4 @@ export function getHighlightedValue(
 			titles: value.indexes.map((index) => dataSets[index].title)
 		};
 	}
-
-	return null;
 }

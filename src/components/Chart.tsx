@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import { useMemo, useState } from "react";
 
+import { ChartContextData } from "./ChartContext";
 import ChartData from "./ChartData";
 import ChartDataMask from "./ChartDataMask";
 import ChartDataPoints from "./ChartDataPoints";
@@ -13,16 +13,28 @@ import ChartValueAxis from "./ChartValueAxis";
 import ChartValueZones from "./ChartValueZones";
 
 import getChartFacts from "../lib/chartFacts";
-import { defaultConfig } from "../lib/config";
+import { ChartConfig, defaultConfig } from "../lib/config";
 import { getHighlightedValue } from "../lib/pointValues";
+import { ChartDataPointTitles, ChartDataSet, ChartLegendTrackItem } from "../lib/types";
 
 import styles from "./Chart.module.css";
 
-function Chart({ config: givenConfig, dataSets: givenDataSets }) {
-	const [highlightedValueKey, setHighlightedValueKey] = useState(null);
-	const [highlightedIndex, setHighlightedIndex] = useState(null);
+interface ChartProps {
+	config: Partial<ChartConfig>;
+	dataSets: ChartDataSet[];
+}
+
+function Chart({
+	config: givenConfig,
+	dataSets: givenDataSets
+}: ChartProps) {
+	const [highlightedValueKey, setHighlightedValueKey] = useState<string | null>(null);
+	const [highlightedIndex, setHighlightedIndex] = useState<number | undefined>(undefined);
 	const [scrollLeft, setScrollLeft] = useState(0);
-	const config = useMemo(() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]);
+
+	const config: ChartConfig = useMemo(
+		() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]
+	);
 
 	const {
 		backgroundColor,
@@ -50,13 +62,11 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		maxValue,
 		totalDays,
 		values
-	} = useMemo(() => {
-		return getChartFacts(givenDataSets, config);
-	}, [config, givenDataSets]);
+	} = useMemo(() => getChartFacts(givenDataSets, config), [config, givenDataSets]);
 
 	// Data for context
 
-	const chartData = useMemo(() => ({
+	const chartData: ChartContextData = useMemo(() => ({
 		config,
 		firstDate,
 		lastDate,
@@ -89,12 +99,10 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	// Highlighted value (from moving mouse over data points)
 
-	const highlightedValue = useMemo(() => {
+	const highlightedValue: ChartDataPointTitles | undefined = useMemo(() => {
 		if (highlightedValueKey) {
 			return getHighlightedValue(highlightedValueKey, values, dataSets);
 		}
-
-		return null;
 	}, [highlightedValueKey, dataSets, values]);
 
 	// Abort if there's no data
@@ -121,7 +129,7 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 
 	displayData.reverse();
 
-	const legendList = dataSets.map(({ artists, title, url }, i) => ({
+	const legendList: ChartLegendTrackItem[] = dataSets.map(({ artists, title, url }, i) => ({
 		artists,
 		color: hasSingleItem ? singleColor : colors[i % colors.length],
 		index: i,
@@ -176,16 +184,6 @@ function Chart({ config: givenConfig, dataSets: givenDataSets }) {
 		</div>
 	);
 }
-
-Chart.propTypes = {
-	config: PropTypes.object,
-	dataSets: PropTypes.arrayOf(PropTypes.shape({
-		title: PropTypes.string,
-		artists: PropTypes.object,
-		url: PropTypes.string,
-		dataPoints: PropTypes.array
-	})).isRequired
-};
 
 Chart.defaultProps = {
 	config: null

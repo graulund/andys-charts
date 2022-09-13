@@ -1,16 +1,28 @@
-import React, { useContext, useMemo } from "react";
-import PropTypes from "prop-types";
+import { useContext, useMemo } from "react";
 import clsx from "clsx";
 import { path } from "d3-path";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
+import { ChartDataItem } from "../lib/types";
 
 import styles from "./ChartDataPoints.module.css";
 
 const minDaysForThinLines = 300;
 
-function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
+interface ChartDataPointsSegmentProps {
+	color: string;
+	dataPoints: ChartDataItem[];
+	fillOpacity: number;
+	index: number;
+}
+
+function ChartDataPointsSegment({
+	color,
+	dataPoints,
+	fillOpacity,
+	index
+}: ChartDataPointsSegmentProps) {
 	const {
 		config,
 		firstDate,
@@ -19,7 +31,7 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 		highlightedIndex,
 		mainAreaHeight,
 		totalDays
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const {
 		chartTopHeight: offsetTop,
@@ -40,12 +52,16 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 	const { areaPath, linePath } = useMemo(() => {
 		const p = path();
 		let begun = false;
-		let firstX;
-		let firstY;
-		let prevX;
-		let prevY;
-		let lastDrawnX;
-		let lastDrawnY;
+		let firstX: number | undefined;
+		let firstY: number | undefined;
+		let prevX: number | undefined;
+		let prevY: number | undefined;
+		let lastDrawnX: number | undefined;
+		let lastDrawnY: number | undefined;
+
+		if (!dataPoints.length) {
+			return {};
+		}
 
 		dataPoints.forEach(({ plays }, index) => {
 			const y = getYPosition(plays);
@@ -59,7 +75,10 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 			} else {
 				// Filter out needless points in straight horizontal lines
 				if (y !== prevY) {
-					if (typeof prevY === "number") {
+					if (
+						typeof prevX === "number" &&
+						typeof prevY === "number"
+					) {
 						p.lineTo(prevX, prevY);
 					}
 
@@ -73,6 +92,20 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 			}
 		});
 
+		if (
+			typeof firstX !== "number" ||
+			typeof firstY !== "number" ||
+			typeof prevX !== "number" ||
+			typeof prevY !== "number" ||
+			typeof lastDrawnX !== "number" ||
+			typeof lastDrawnY !== "number"
+		) {
+			// This case shouldn't really happen if dataPoints length is non-zero...
+			return {};
+		}
+
+		// Finish the line path
+
 		if (prevX > lastDrawnX) {
 			p.lineTo(prevX, prevY);
 			lastDrawnX = prevX;
@@ -81,7 +114,7 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 
 		const linePath = p.toString();
 
-		// Finish the area
+		// Finish the area path
 
 		if (lastDrawnY < chartBottomY) {
 			p.lineTo(lastDrawnX, chartBottomY);
@@ -103,6 +136,10 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 		getYPosition,
 		startOffset
 	]);
+
+	if (!areaPath || !linePath) {
+		return null;
+	}
 
 	// Fade if this segment is not part of the highlighted track index
 
@@ -138,15 +175,5 @@ function ChartDataPointsSegment({ color, dataPoints, fillOpacity, index }) {
 		</>
 	);
 }
-
-ChartDataPointsSegment.propTypes = {
-	color: PropTypes.string.isRequired,
-	dataPoints: PropTypes.arrayOf(PropTypes.shape({
-		date: PropTypes.string,
-		plays: PropTypes.number
-	})).isRequired,
-	fillOpacity: PropTypes.number.isRequired,
-	index: PropTypes.number.isRequired
-};
 
 export default ChartDataPointsSegment;

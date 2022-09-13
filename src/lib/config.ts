@@ -9,7 +9,7 @@ export interface ChartConfig {
 	readonly dataMaskId: string,
 	readonly fillOpacity: number,
 	readonly isSingle: boolean,
-	readonly language: string,
+	readonly language: "da" | "en",
 	readonly linkMainClassName: string,
 	readonly maxDays: number,
 	readonly maxEndPaddingDays: number,
