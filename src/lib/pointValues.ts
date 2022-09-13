@@ -1,5 +1,5 @@
 import {
-	ChartDataItem,
+	ChartDataPoint,
 	ChartDataPointTitles,
 	ChartDataPointValues,
 	ChartDataSet
@@ -9,12 +9,12 @@ export function getValueKey(date: string, plays: number) {
 	return `${date}:${plays}`;
 }
 
-export function getValueFromKey(valueKey: string): ChartDataItem {
+export function getValueFromKey(valueKey: string): ChartDataPoint {
 	const [date, plays] = valueKey.split(":");
 	return { date, plays: Number(plays) };
 }
 
-export function getAllValues(dataPointLists: ChartDataItem[][]): ChartDataPointValues[] {
+export function getAllValues(dataPointLists: ChartDataPoint[][]): ChartDataPointValues[] {
 	const valuesMap: { [valueKey: string]: number[] } = {};
 
 	dataPointLists.forEach((dataPoints, trackIndex) => {

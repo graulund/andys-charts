@@ -1,24 +1,17 @@
-// TODO: Rename this file, please please please
-
 import { ChartConfig } from "./config";
-
-import {
-	filterDataSets,
-	padChartDataPointLists
-} from "./chartData";
-
+import { filterDataSets, padChartDataPointLists } from "./chartData";
 import { getAllValues } from "./pointValues";
 import { dateFromYmd, daysBetweenDates } from "./time";
 
 import {
-	ChartDataItem,
+	ChartDataPoint,
 	ChartDataPointValues,
 	ChartDataSet,
 } from "./types";
 
 interface ChartFacts {
 	dataSets: ChartDataSet[];
-	dataPointLists: ChartDataItem[][];
+	dataPointLists: ChartDataPoint[][];
 	firstDate: string;
 	lastDate: string;
 	maxValue: number;
@@ -26,7 +19,8 @@ interface ChartFacts {
 	values: ChartDataPointValues[]
 }
 
-function maxPlays(data: ChartDataItem[]) {
+/** Find the maximum play value in a list of data points */
+function maxPlays(data: ChartDataPoint[]) {
 	return (data || []).reduce((val, current) => {
 		if (current.plays > val) {
 			return current.plays;
@@ -36,7 +30,16 @@ function maxPlays(data: ChartDataItem[]) {
 	}, 0);
 }
 
-export default function getChartFacts(givenDataSets: ChartDataSet[], config: ChartConfig): ChartFacts {
+/**
+ * Calculate facts about, and view values for, this chart based on data and configuration
+ * @param givenDataSets Chart data sets, as given by the end user
+ * @param config Chart config
+ * @returns Several calculated chart facts
+ */
+export default function getChartFacts(
+	givenDataSets: ChartDataSet[],
+	config: ChartConfig
+): ChartFacts {
 	const { minMaxPlays, minValues } = config;
 
 	// Pad and limit data

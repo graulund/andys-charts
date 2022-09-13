@@ -19,19 +19,19 @@ interface ChartDataSetBase { // TODO: Make this independent of track?
 }
 
 export interface ChartDataSet extends ChartDataSetBase {
-	dataPoints: ChartDataItem[];
+	dataPoints: ChartDataPoint[];
 }
 
 export interface CompressedChartDataSet extends ChartDataSetBase {
-	dataPoints: CompressedChartDataItem[];
+	dataPoints: CompressedChartDataPoint[];
 }
 
-export interface ChartDataItem {
+export interface ChartDataPoint {
 	date: string;
 	plays: number;
 }
 
-export type CompressedChartDataItem = [string, number];
+export type CompressedChartDataPoint = [string, number];
 
 export interface ChartDataMap {
 	[date: string]: number;
@@ -39,7 +39,7 @@ export interface ChartDataMap {
 
 export interface FilteredChartDataSetResult {
 	dataSets: ChartDataSet[];
-	dataPointLists: ChartDataItem[][];
+	dataPointLists: ChartDataPoint[][];
 }
 
 export interface ChartDataPointValues {

@@ -4,7 +4,7 @@ import { path } from "d3-path";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
-import { ChartDataItem } from "../lib/types";
+import { ChartDataPoint } from "../lib/types";
 
 import styles from "./ChartDataPoints.module.css";
 
@@ -12,7 +12,7 @@ const minDaysForThinLines = 300;
 
 interface ChartDataPointsSegmentProps {
 	color: string;
-	dataPoints: ChartDataItem[];
+	dataPoints: ChartDataPoint[];
 	fillOpacity: number;
 	index: number;
 }

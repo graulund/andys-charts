@@ -2,11 +2,11 @@ import { useMemo } from "react";
 
 import ChartDataPointsSegment from "./ChartDataPointsSegment";
 import { getPaddedDataPointSegments } from "../lib/chartData";
-import { ChartDataItem } from "../lib/types";
+import { ChartDataPoint } from "../lib/types";
 
 interface ChartDataPointsProps {
 	color: string;
-	dataPoints: ChartDataItem[];
+	dataPoints: ChartDataPoint[];
 	fillOpacity: number;
 	index: number;
 }

@@ -1,18 +1,22 @@
 import {
 	ChartDataSet,
 	CompressedChartDataSet,
-	ChartDataItem,
-	CompressedChartDataItem
+	ChartDataPoint,
+	CompressedChartDataPoint
 } from "./types";
 
-export function unpackCompressedDataPoints(compressedDataPoints: CompressedChartDataItem[]): ChartDataItem[] {
+export function unpackCompressedDataPoints(
+	compressedDataPoints: CompressedChartDataPoint[]
+): ChartDataPoint[] {
 	return compressedDataPoints.map((data) => {
 		const [date, plays] = data;
 		return { date, plays };
 	});
 }
 
-export function unpackDataPointsInDataSets(dataSets: CompressedChartDataSet[]): ChartDataSet[] {
+export function unpackDataPointsInDataSets(
+	dataSets: CompressedChartDataSet[]
+): ChartDataSet[] {
 	return dataSets.map((data) => {
 		const { dataPoints } = data;
 

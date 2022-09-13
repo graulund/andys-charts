@@ -10,26 +10,36 @@ import {
 import { ChartConfig } from "./config";
 
 import {
-	ChartDataItem,
+	ChartDataPoint,
 	ChartDataMap,
 	ChartDataSet,
 	FilteredChartDataSetResult
 } from "./types";
 
-// TODO Rename this file
+// TODO Rename this file, probably
 
-function chartDataItem(date: string, plays: number): ChartDataItem {
+/** Create a single data point object from values */
+function chartDataPoint(date: string, plays: number): ChartDataPoint {
 	return { date: ymdFromDate(date), plays };
 }
 
-function convertDataPointsToDateMap(dataPoints: ChartDataItem[]): ChartDataMap {
+/**
+ * Convert list of data points to a date => plays map
+ * @param dataPoints List of data points
+ * @returns ChartDataMap
+ */
+function convertDataPointsToDateMap(dataPoints: ChartDataPoint[]): ChartDataMap {
 	return (dataPoints || []).reduce<ChartDataMap>((map, data) => {
 		map[data.date] = data.plays;
 		return map;
 	}, {});
 }
 
-function getExtremeDateInDataPoints(dataPoints: ChartDataItem[], type: "earliest" | "latest"): Date | null {
+/** Get either earliest or latest date in list of data points */
+function getExtremeDateInDataPoints(
+	dataPoints: ChartDataPoint[],
+	type: "earliest" | "latest"
+): Date | null {
 	if (!dataPoints.length) {
 		return null;
 	}
@@ -38,8 +48,9 @@ function getExtremeDateInDataPoints(dataPoints: ChartDataItem[], type: "earliest
 	return dateFromYmd(item.date);
 }
 
+/** Get either earliest or latest date with data across several lists of data points */
 function getExtremeDateInDataPointLists(
-	dataPointLists: ChartDataItem[][],
+	dataPointLists: ChartDataPoint[][],
 	type: "earliest" | "latest"
 ): Date | null {
 	const extremeDates = dataPointLists.map((data) => getExtremeDateInDataPoints(data, type))
@@ -55,10 +66,16 @@ function getExtremeDateInDataPointLists(
 	return new Date(result);
 }
 
+/**
+ * Pad and limit data point lists according to chart config
+ * @param dataPointLists Lists of data points
+ * @param options Chart config, specifying min/max chart days, override start/end times, etc.
+ * @returns Padded (including days with zero plays) and limited data point lists
+ */
 export function padChartDataPointLists(
-	dataPointLists: ChartDataItem[][],
+	dataPointLists: ChartDataPoint[][],
 	options: Partial<ChartConfig> = {}
-): ChartDataItem[][] {
+): ChartDataPoint[][] {
 	const {
 		maxDays = 183,
 		minDays = 10,
@@ -112,35 +129,50 @@ export function padChartDataPointLists(
 
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))
-		.filter((l) => !!l) as ChartDataItem[][]; // There are no more nulls in this list now
+		.filter((l) => !!l) as ChartDataPoint[][]; // There are no more nulls in this list now
 }
 
-export function padChartDataPoints(dataPoints: ChartDataItem[], startDate: Date, endDate: Date) {
-	// Pad spaces in data set with 0 play days
-	// Note: This function also cuts off all days before the supplied startDate
+/**
+ * Pad spaces in list of data points with zero-play days.
+ * This function also cuts off all days not within the supplied start and end dates
+ * @param dataPoints List of data points
+ * @param startDate Chart start date
+ * @param endDate Chart end date
+ * @returns Padded and limited list of data points
+ */
+export function padChartDataPoints(dataPoints: ChartDataPoint[], startDate: Date, endDate: Date) {
 	if (!dataPoints?.length) {
 		return null;
 	}
 
 	const playsMap = convertDataPointsToDateMap(dataPoints);
-	const out: ChartDataItem[] = [];
+	const out: ChartDataPoint[] = [];
 	let current = startDate;
 
 	while (current <= endDate) {
 		const ymd = ymdFromDate(current);
-		out.push(chartDataItem(ymd, playsMap[ymd] || 0));
+		out.push(chartDataPoint(ymd, playsMap[ymd] || 0));
 		current = nextDay(current);
 	}
 
 	return out;
 }
 
+/**
+ * Exclude data sets with very few data points.
+ * This needs to be run *after* processing the data point lists, since the result of
+ * this processing (the limiting) might cause some data point lists to have fewer
+ * non-zero play days than when initially supplied
+ * @param dataSets All chart data sets
+ * @param processedDataPointLists Padded and limited lists of data points (same order as data sets)
+ * @param minValues Minimum number of non-zero play days in data point lists for inclusion
+ * @returns Filtered data sets and data point lists
+ */
 export function filterDataSets(
 	dataSets: ChartDataSet[],
-	processedDataPointLists: ChartDataItem[][],
+	processedDataPointLists: ChartDataPoint[][],
 	minValues = 2
 ): FilteredChartDataSetResult {
-	// Exclude data sets with very few data points (less than 2)
 	return processedDataPointLists.reduce<FilteredChartDataSetResult>((out, dataPoints, index) => {
 		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
 
@@ -153,16 +185,19 @@ export function filterDataSets(
 	}, { dataSets: [], dataPointLists: [] });
 }
 
-export function getPaddedDataPointSegments(dataPoints: ChartDataItem[]) {
-	// Split segments of the padded data points list into line segments,
-	// removing any big swaths (>= 2) of contiguous zeroes
-	// (All dates within a segment are guaranteed to be continguous)
-
+/**
+ * Split segments of the padded data points list into line segments,
+ * removing any big swaths (>= 2) of contiguous zero play days.
+ * (All dates within a segment are guaranteed to be continguous (aka padded with zeroes))
+ * @param dataPoints Padded and limited list of data points
+ * @returns Segmented list of data points
+ */
+export function getPaddedDataPointSegments(dataPoints: ChartDataPoint[]) {
 	let numZeroes = 0;
-	let lastDataPoint: ChartDataItem | null = null;
-	let currentSegment: ChartDataItem[] | null = null;
+	let lastDataPoint: ChartDataPoint | null = null;
+	let currentSegment: ChartDataPoint[] | null = null;
 
-	const segments = dataPoints.reduce<ChartDataItem[][]>((segments, dataPoint, index) => {
+	const segments = dataPoints.reduce<ChartDataPoint[][]>((segments, dataPoint, index) => {
 		const { plays } = dataPoint;
 
 		if (plays > 0) {
