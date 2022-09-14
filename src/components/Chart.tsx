@@ -19,7 +19,7 @@ import { ChartDataPointTitles, ChartDataSet, ChartLegendTrackItem } from "../lib
 
 import styles from "./Chart.module.css";
 
-interface ChartProps {
+export interface ChartProps {
 	config: Partial<ChartConfig>;
 	dataSets: ChartDataSet[];
 }
