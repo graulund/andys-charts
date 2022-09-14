@@ -93,7 +93,7 @@ export interface ChartConfig {
 
 	/**
 	 * Display no less than this amount of days even for very tiny data sets.
-	 * This prevents very stretched, small charts
+	 * This extra padding prevents very stretched small charts
 	 */
 	readonly minDays: number,
 
@@ -110,16 +110,16 @@ export interface ChartConfig {
 	readonly minValues: number,
 
 	/**
-	 * Enable a specific end date (specified in `YYYY-MM-DD`) for the chart.
-	 * This crops the data set and overrides other padding/min-max-day-related
-	 * settings 
+	 * Enable a specific end date (specified in `YYYY-MM-DD` format) for the
+	 * chart. This crops the data set and overrides other padding/min-max-day-
+	 * related settings 
 	 */
 	readonly overrideEndYmd: string,
 
 	/**
-	 * Enable a specific start date (specified in `YYYY-MM-DD`) for the chart.
-	 * This crops the data set and overrides other padding/min-max-day-related
-	 * settings 
+	 * Enable a specific start date (specified in `YYYY-MM-DD` format) for the
+	 * chart. This crops the data set and overrides other padding/min-max-day-
+	 * related settings 
 	 */
 	readonly overrideStartYmd: string,
 

@@ -95,6 +95,6 @@ export interface ChartLegendTrackItem extends ChartDataSetBase {
  * A (partial) chart config, and a list of "compressed" data sets
  */
 export interface CompressedChartData {
-	config: Partial<ChartConfig>,
-	dataSets: CompressedChartDataSet[]
+	config: Partial<ChartConfig>;
+	dataSets: CompressedChartDataSet[];
 }
