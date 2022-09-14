@@ -10,6 +10,7 @@ interface ChartHighlightMarkerProps {
 	value?: ChartDataPointTitles;
 }
 
+/** Renders a point shape highlighting the data point the user is currently inspecting */
 function ChartHighlightMarker({ value }: ChartHighlightMarkerProps) {
 	const {
 		config: { dark },
@@ -21,8 +22,6 @@ function ChartHighlightMarker({ value }: ChartHighlightMarkerProps) {
 
 	let x = 0;
 	let y = 0;
-
-	// Displaying a marker and info bubble
 
 	if (value) {
 		const { date: ymd, plays } = value;

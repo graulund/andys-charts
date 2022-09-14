@@ -31,7 +31,8 @@ function maxPlays(data: ChartDataPoint[]) {
 }
 
 /**
- * Calculate facts about, and view values for, this chart based on data and configuration
+ * Calculate facts about, and view values for, this chart based on data and
+ * configuration
  * @param givenDataSets Chart data sets, as given by the end user
  * @param config Chart config
  * @returns Several calculated chart facts
@@ -51,9 +52,8 @@ export default function getChartFacts(
 
 	// Filter data
 
-	const { dataSets, dataPointLists } = filterDataSets(
-		givenDataSets, paddedLists, minValues
-	);
+	const dataSets = filterDataSets(givenDataSets, paddedLists, minValues);
+	const dataPointLists = dataSets.map(({ dataPoints }) => dataPoints);
 
 	// Get scope of data
 

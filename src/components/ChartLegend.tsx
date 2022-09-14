@@ -11,6 +11,10 @@ interface ChartLegendProps {
 	tracks: ChartLegendTrackItem[];
 }
 
+/**
+ * Renders the legend under the chart, with the user allowed to highlight
+ * a single set of data points
+*/
 function ChartLegend({ tracks }: ChartLegendProps) {
 	const {
 		config,

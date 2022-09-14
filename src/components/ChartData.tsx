@@ -7,6 +7,10 @@ interface ChartDataProps extends ChartContextData {
 	children: React.ReactNode;
 }
 
+/**
+ * This chart data wrapper component surrounds the entire chart and creates a React context,
+ * calculates the context values, providing the data to the individual chart components.
+ */
 function ChartData({ children, ...data }: ChartDataProps) {
 	const {
 		config,

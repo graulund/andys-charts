@@ -35,6 +35,9 @@ export interface ChartContextContent extends ChartContextData {
 	unitWidth: number;
 }
 
+/**
+ * Chart context: Provides the config, along with calculated values, to the components
+ */
 const ChartContext = React.createContext<ChartContextContent | null>(null);
 ChartContext.displayName = "ChartContext";
 

@@ -7,7 +7,8 @@ import ChartContext, { ChartContextContent } from "./ChartContext";
 import {
 	dateFromYmd,
 	formatYearMonth,
-	getAllMonthsBetweenDates
+	getAllMonthsBetweenDates,
+	YearMonthFormattingStyle
 } from "../lib/time";
 
 import styles from "./ChartAxes.module.css";
@@ -15,6 +16,7 @@ import styles from "./ChartAxes.module.css";
 const tickTextOffsetTop = 12;
 const tickTextMinRightPadding = 8;
 
+/** Renders the time (x) axis of the chart; with a variable amount of labels */
 function ChartTimeAxis() {
 	const firstLabelEl = useRef<SVGTextElement>(null);
 	const [hideFirstLabel, setHideFirstLabel] = useState(false);
@@ -43,7 +45,7 @@ function ChartTimeAxis() {
 	const start = dateFromYmd(firstDate);
 	const months = getAllMonthsBetweenDates(firstDate, lastDate);
 	const monthCount = months.length;
-	let monthFormatStyle = "normal";
+	let monthFormatStyle: YearMonthFormattingStyle = "normal";
 
 	// TODO: This should depend on chart width
 	// (on 700px chart width, 16-ish months (or maybe even less) should be tiny)

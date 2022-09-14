@@ -9,6 +9,10 @@ import { CompressedChartData } from "./lib/types";
 
 let rendered = false;
 
+// This is hardcoded as a window prop for now, so it can be implemented in a
+// server-based page without React.
+
+// TODO: Separate React module into its own library repo (and npm package)
 declare global {
 	interface Window { createAndyCharts: any; }
 }

@@ -17,6 +17,10 @@ interface ChartDataPointsSegmentProps {
 	index: number;
 }
 
+/**
+ * Renders a single "segment" of a sequence of data points. Data points are split into
+ * visible segments in the view, to allow for optimized rendering.
+ */
 function ChartDataPointsSegment({
 	color,
 	dataPoints,
@@ -159,13 +163,15 @@ function ChartDataPointsSegment({
 
 	return (
 		<>
-			<path
-				className={areaClassName}
-				d={areaPath}
-				fill={colorAttr}
-				opacity={areaOpacity}
-				mask={maskSelector}
-			/>
+			{ fillOpacity > 0 && (
+				<path
+					className={areaClassName}
+					d={areaPath}
+					fill={colorAttr}
+					opacity={areaOpacity}
+					mask={maskSelector}
+				/>
+			) }
 			<path
 				className={lineClassName}
 				d={linePath}

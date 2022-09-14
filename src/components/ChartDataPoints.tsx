@@ -11,6 +11,7 @@ interface ChartDataPointsProps {
 	index: number;
 }
 
+/** Renders a single set of data points */
 function ChartDataPoints({
 	color,
 	dataPoints,

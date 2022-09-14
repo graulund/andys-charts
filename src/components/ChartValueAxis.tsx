@@ -21,6 +21,7 @@ function getEvens(range: number[]) {
 	return range.filter((n) => n % 2 === 0);
 }
 
+/** Renders the value (y) axis of the chart */
 function ChartValueAxis() {
 	const {
 		config,

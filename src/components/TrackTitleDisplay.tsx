@@ -6,7 +6,7 @@ import { TrackArtist, TrackArtists } from "../lib/types";
 
 import styles from "./TrackTitleDisplay.module.css";
 
-type Language = ChartConfig['language'];
+type Language = ChartConfig["language"];
 
 function asText(language: Language) {
 	if (language === "da") {
@@ -73,6 +73,10 @@ interface TrackTitleDisplayProps {
 	title: string;
 }
 
+/**
+ * Renders a textual representation of a musical track (title and artists) formatted
+ * in a specific way, as required by the data source and the general context
+ */
 function TrackTitleDisplay({
 	artists,
 	dark,

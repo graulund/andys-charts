@@ -24,6 +24,9 @@ interface ChartProps {
 	dataSets: ChartDataSet[];
 }
 
+/**
+ * Main chart component: Takes a partial config and non-compressed data sets as props
+ */
 function Chart({
 	config: givenConfig,
 	dataSets: givenDataSets

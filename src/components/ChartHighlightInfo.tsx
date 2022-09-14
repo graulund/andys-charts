@@ -15,6 +15,7 @@ interface ChartHighlightInfoProps {
 	value?: ChartDataPointTitles
 }
 
+/** Renders an info bubble, displaying additional info about a specific data point */
 function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 	const {
 		config,
@@ -39,7 +40,7 @@ function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 		[styles.noInfo]: !value
 	});
 
-	// Displaying a marker and info bubble
+	// Rendering an info bubble
 
 	if (value) {
 		const { date: ymd, plays } = value;

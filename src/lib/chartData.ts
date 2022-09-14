@@ -12,11 +12,10 @@ import { ChartConfig } from "./config";
 import {
 	ChartDataPoint,
 	ChartDataMap,
-	ChartDataSet,
-	FilteredChartDataSetResult
+	ChartDataSet
 } from "./types";
 
-// TODO Rename this file, probably
+// This file has various helper methods for calculating the chart facts
 
 /** Create a single data point object from values */
 function chartDataPoint(date: string, plays: number): ChartDataPoint {
@@ -166,23 +165,22 @@ export function padChartDataPoints(dataPoints: ChartDataPoint[], startDate: Date
  * @param dataSets All chart data sets
  * @param processedDataPointLists Padded and limited lists of data points (same order as data sets)
  * @param minValues Minimum number of non-zero play days in data point lists for inclusion
- * @returns Filtered data sets and data point lists
+ * @returns Filtered data sets with processed data point lists
  */
 export function filterDataSets(
 	dataSets: ChartDataSet[],
 	processedDataPointLists: ChartDataPoint[][],
 	minValues = 2
-): FilteredChartDataSetResult {
-	return processedDataPointLists.reduce<FilteredChartDataSetResult>((out, dataPoints, index) => {
+): ChartDataSet[] {
+	return processedDataPointLists.reduce<ChartDataSet[]>((out, dataPoints, index) => {
 		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
 
 		if (hasMinValues) {
-			out.dataSets.push(dataSets[index]);
-			out.dataPointLists.push(dataPoints);
+			out.push({ ...dataSets[index], dataPoints });
 		}
 
 		return out;
-	}, { dataSets: [], dataPointLists: [] });
+	}, []);
 }
 
 /**

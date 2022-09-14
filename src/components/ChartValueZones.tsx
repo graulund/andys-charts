@@ -9,6 +9,12 @@ interface ChartValueZonesProps {
 	values: ChartDataPointValues[];
 }
 
+/**
+ * Renders "value zones" over the chart area: One zone for each point value
+ * (a combination of time and play value) occurring in the chart. This allows
+ * a user to see more information about the values as they move their pointer
+ * over the various value zones.
+ */
 function ChartValueZones({ values }: ChartValueZonesProps) {
 	const {
 		config,

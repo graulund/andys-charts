@@ -8,6 +8,9 @@ interface ChartScrollContainerProps {
 	children: React.ReactNode;
 }
 
+/**
+ * Renders a container that allows the chart to be scrolled horizontally in narrow viewports
+ */
 function ChartScrollContainer({ children }: ChartScrollContainerProps) {
 	const containerEl = useRef<HTMLDivElement>(null);
 
