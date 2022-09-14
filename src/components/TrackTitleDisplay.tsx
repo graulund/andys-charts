@@ -1,10 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
+
+import { ChartConfig } from "../lib/config";
+import { TrackArtist, TrackArtists } from "../lib/types";
 
 import styles from "./TrackTitleDisplay.module.css";
 
-function asText(language) {
+type Language = ChartConfig["language"];
+
+function asText(language: Language) {
 	if (language === "da") {
 		return "som";
 	}
@@ -12,7 +16,7 @@ function asText(language) {
 	return "as";
 }
 
-function withText(language) {
+function withText(language: Language) {
 	if (language === "da") {
 		return "med";
 	}
@@ -20,8 +24,8 @@ function withText(language) {
 	return "with";
 }
 
-function renderList(items) {
-	return items.reduce((out, item, index) => {
+function renderList(items: React.ReactNode[]) {
+	return items.reduce<React.ReactNode[]>((out, item, index) => {
 		if (index > 0) {
 			if (index === items.length - 1) {
 				out.push(" & ");
@@ -35,21 +39,25 @@ function renderList(items) {
 	}, []);
 }
 
-function ArtistName({ name }) {
+interface ArtistNameProps {
+	name: string;
+}
+
+function ArtistName({ name }: ArtistNameProps) {
 	return <span className={styles.artist}>{ name }</span>;
 }
 
 ArtistName.displayName = "TrackTitleDisplay.ArtistName";
 
-ArtistName.propTypes = {
-	name: PropTypes.string.isRequired
-};
+interface ArtistListProps {
+	artists: TrackArtist[];
+}
 
-function ArtistList({ artists }) {
+function ArtistList({ artists }: ArtistListProps) {
 	return (
 		<>
-			{ renderList(artists.map(({ name }, i) => (
-				<ArtistName name={name} key={i} />
+			{ renderList(artists.map(({ id, name }, i) => (
+				<ArtistName name={name} key={id || i} />
 			))) }
 		</>
 	);
@@ -57,13 +65,25 @@ function ArtistList({ artists }) {
 
 ArtistList.displayName = "TrackTitleDisplay.ArtistList";
 
-ArtistList.propTypes = {
-	artists: PropTypes.arrayOf(PropTypes.shape({
-		name: PropTypes.string
-	})).isRequired
-};
+interface TrackTitleDisplayProps {
+	artists?: TrackArtists;
+	dark: boolean;
+	language: Language;
+	mainClassName?: string;
+	title: string;
+}
 
-function TrackTitleDisplay({ artists, dark, language, mainClassName, title }) {
+/**
+ * Renders a textual representation of a musical track (title and artists) formatted
+ * in a specific way, as required by the data source and the general context
+ */
+function TrackTitleDisplay({
+	artists,
+	dark,
+	language,
+	mainClassName,
+	title
+}: TrackTitleDisplayProps) {
 	let prefix = null;
 
 	if (artists?.main) {
@@ -137,14 +157,6 @@ function TrackTitleDisplay({ artists, dark, language, mainClassName, title }) {
 		</span>
 	);
 }
-
-TrackTitleDisplay.propTypes = {
-	artists: PropTypes.object,
-	dark: PropTypes.bool,
-	language: PropTypes.string,
-	mainClassName: PropTypes.string,
-	title: PropTypes.string.isRequired
-};
 
 TrackTitleDisplay.defaultProps = {
 	artists: null,

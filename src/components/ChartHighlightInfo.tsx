@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext } from "react";
 import clsx from "clsx";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 import { dateFromYmd, formatDate } from "../lib/time";
+import { ChartDataPointTitles } from "../lib/types";
 
 import styles from "./ChartHighlightInfo.module.css";
 
@@ -11,13 +11,18 @@ const infoHorizontalOffset = -16;
 const infoVerticalOffset = 20;
 const windowWidthBuffer = 250;
 
-function ChartHighlightInfo({ value }) {
+interface ChartHighlightInfoProps {
+	value?: ChartDataPointTitles
+}
+
+/** Renders an info bubble, displaying additional info about a specific data point */
+function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 	const {
 		config,
 		getXPositionFromDate,
 		getYBottomPosition,
 		scrollLeft
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const { isSingle, language } = config;
 
@@ -35,7 +40,7 @@ function ChartHighlightInfo({ value }) {
 		[styles.noInfo]: !value
 	});
 
-	// Displaying a marker and info bubble
+	// Rendering an info bubble
 
 	if (value) {
 		const { date: ymd, plays } = value;
@@ -71,15 +76,6 @@ function ChartHighlightInfo({ value }) {
 		</div>
 	);
 }
-
-ChartHighlightInfo.propTypes = {
-	value: PropTypes.shape({
-		date: PropTypes.string,
-		indexes: PropTypes.arrayOf(PropTypes.number),
-		plays: PropTypes.number,
-		titles: PropTypes.arrayOf(PropTypes.string)
-	})
-};
 
 ChartHighlightInfo.defaultProps = {
 	value: null

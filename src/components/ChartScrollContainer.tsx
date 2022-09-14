@@ -1,14 +1,20 @@
 import React, { useContext, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 
 import styles from "./ChartScrollContainer.module.css";
 
-function ChartScrollContainer({ children }) {
-	const containerEl = useRef(null);
+interface ChartScrollContainerProps {
+	children: React.ReactNode;
+}
 
-	const { config, setScrollLeft } = useContext(ChartContext);
+/**
+ * Renders a container that allows the chart to be scrolled horizontally in narrow viewports
+ */
+function ChartScrollContainer({ children }: ChartScrollContainerProps) {
+	const containerEl = useRef<HTMLDivElement>(null);
+
+	const { config, setScrollLeft } = useContext(ChartContext) as ChartContextContent;
 	const { chartWidth, showEndFirst } = config;
 
 	const onScroll = () => {
@@ -53,9 +59,5 @@ function ChartScrollContainer({ children }) {
 		</div>
 	);
 }
-
-ChartScrollContainer.propTypes = {
-	children: PropTypes.node.isRequired
-};
 
 export default ChartScrollContainer;

@@ -1,18 +1,26 @@
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext } from "react";
 import clsx from "clsx";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent } from "./ChartContext";
 import TrackTitleDisplay from "./TrackTitleDisplay";
+import { ChartLegendTrackItem } from "../lib/types";
 
 import styles from "./ChartLegend.module.css";
 
-function ChartLegend({ tracks }) {
+interface ChartLegendProps {
+	tracks: ChartLegendTrackItem[];
+}
+
+/**
+ * Renders the legend under the chart, with the user allowed to highlight
+ * a single set of data points
+*/
+function ChartLegend({ tracks }: ChartLegendProps) {
 	const {
 		config,
 		highlightedIndex,
 		setHighlightedIndex // set highlighted dataset
-	} = useContext(ChartContext);
+	} = useContext(ChartContext) as ChartContextContent;
 
 	const { dark, isSingle, language, linkMainClassName } = config;
 
@@ -32,7 +40,7 @@ function ChartLegend({ tracks }) {
 				{ tracks.map(({ artists, color, index, title, url }) => {
 					const mouseOut = () => {
 						if (highlightedIndex === index) {
-							setHighlightedIndex(null);
+							setHighlightedIndex(undefined);
 						}
 					};
 
@@ -63,15 +71,5 @@ function ChartLegend({ tracks }) {
 		</div>
 	);
 }
-
-ChartLegend.propTypes = {
-	tracks: PropTypes.arrayOf(PropTypes.shape({
-		artists: PropTypes.object,
-		color: PropTypes.string,
-		index: PropTypes.number,
-		title: PropTypes.string,
-		url: PropTypes.string
-	})).isRequired
-};
 
 export default ChartLegend;

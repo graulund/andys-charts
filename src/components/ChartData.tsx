@@ -1,10 +1,17 @@
 import React, { useCallback, useMemo } from "react";
-import PropTypes from "prop-types";
 
-import ChartContext from "./ChartContext";
+import ChartContext, { ChartContextContent, ChartContextData } from "./ChartContext";
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
-function ChartData({ children, ...data }) {
+interface ChartDataProps extends ChartContextData {
+	children: React.ReactNode;
+}
+
+/**
+ * This chart data wrapper component surrounds the entire chart and creates a React context,
+ * calculates the context values, providing the data to the individual chart components.
+ */
+function ChartData({ children, ...data }: ChartDataProps) {
 	const {
 		config,
 		firstDate,
@@ -29,7 +36,7 @@ function ChartData({ children, ...data }) {
 	const unitHeight = 1 / maxValue * mainAreaHeight;
 
 	const getYPosition = useCallback(
-		(val) => {
+		(val: number) => {
 			// const percY = (maxValue - val) / maxValue;
 			const perc = 1 - (val - minValue) / (maxValue - minValue);
 			return offsetTop + perc * mainAreaHeight;
@@ -38,7 +45,7 @@ function ChartData({ children, ...data }) {
 	);
 
 	const getYBottomPosition = useCallback(
-		(val) => {
+		(val: number) => {
 			const perc = 1 - (val - minValue) / (maxValue - minValue);
 			return offsetBottom + (1 - perc) * mainAreaHeight;
 		},
@@ -46,7 +53,7 @@ function ChartData({ children, ...data }) {
 	);
 
 	const getXPositionFromDaysSinceStart = useCallback(
-		(days) => {
+		(days: number) => {
 			const perc = days / totalDays;
 			return offsetLeft + perc * mainAreaWidth;
 		},
@@ -54,7 +61,7 @@ function ChartData({ children, ...data }) {
 	);
 
 	const getXPositionFromDate = useCallback(
-		(date) => {
+		(date: Date) => {
 			const days = daysBetweenDates(start, date);
 			return getXPositionFromDaysSinceStart(days);
 		},
@@ -62,13 +69,13 @@ function ChartData({ children, ...data }) {
 	);
 
 	const getXPositionFromYmd = useCallback(
-		(ymd) => getXPositionFromDate(dateFromYmd(ymd)),
+		(ymd: string) => getXPositionFromDate(dateFromYmd(ymd)),
 		[getXPositionFromDate]
 	);
 
 	// Add the functions to the context, along with the passed data
 
-	const contextData = useMemo(() => ({
+	const contextData: ChartContextContent = useMemo(() => ({
 		...data,
 		getXPositionFromDate,
 		getXPositionFromDaysSinceStart,
@@ -94,19 +101,5 @@ function ChartData({ children, ...data }) {
 		</ChartContext.Provider>
 	);
 }
-
-ChartData.propTypes = {
-	children: PropTypes.node.isRequired,
-	firstDate: PropTypes.string.isRequired,
-	config: PropTypes.shape({
-		chartBottomHeight: PropTypes.number,
-		chartLeftWidth: PropTypes.number,
-		chartTopHeight: PropTypes.number
-	}).isRequired,
-	mainAreaHeight: PropTypes.number.isRequired,
-	mainAreaWidth: PropTypes.number.isRequired,
-	maxValue: PropTypes.number.isRequired,
-	totalDays: PropTypes.number.isRequired
-};
 
 export default ChartData;
