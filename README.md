@@ -2,6 +2,8 @@
 
 A simple charting library made out of React, TypeScript and SVG for a very specific use case: Showing plays per day for musical tracks. 
 
+<img width="1007" alt="Screen Shot 2022-09-14 at 23 14 43" src="https://user-images.githubusercontent.com/80858/190263861-fb20ebf4-986f-4255-8e75-cafdbbc855a8.png">
+
 This is the charting library used on my sites [Playte](https://playte.co/andy/music/Harry_Styles) and [P3 Trends](https://andyg.dk/p3trends/music/Harry_Styles). It is used to display the amount of time one or more tracks have been played per day, over time, via a minimalistic, stylish, interactive, to-the-point area chart. 
 
 This area chart has time as the x-axis dimension, with an important feature: There's a tick/label for each month — regardless of how many months have passed in the timespan of the chart. This means that the amount of ticks and labels in the x-axis is variable and automatic.
@@ -36,7 +38,7 @@ interface CompressedChartData {
 				feat?: [{ name: string } /* , ... */ ]; // Featuring-level artist(s) for track
 				as?: { name: string }; // Any alt name for implied main artist for track
 			};
-			url?: string; // Track URL
+			url?: string; // Optional track URL: This link will appear in the chart legend
 			dataPoints: [
 				// List of two-value arrays with data points for the chart:
 				// First value is the date expressed as a YYYY-MM-DD string
