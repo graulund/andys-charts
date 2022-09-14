@@ -2,14 +2,16 @@
 
 A simple charting library made out of React, TypeScript and SVG for a very specific use case: Showing plays per day for musical tracks. 
 
-This is the charting library used on my sites [Playte](https://playte.co/andy/music/Harry_Styles) and [P3 Trends](https://andyg.dk/p3trends/music/Harry_Styles). It is used to display the amount of time a track has been played per day, over time, via a simple, stylish, minimalistic, interactive, to-the-point area chart. 
+This is the charting library used on my sites [Playte](https://playte.co/andy/music/Harry_Styles) and [P3 Trends](https://andyg.dk/p3trends/music/Harry_Styles). It is used to display the amount of time one or more tracks have been played per day, over time, via a minimalistic, stylish, interactive, to-the-point area chart. 
 
-Because of the fact that both sites that I intended to use this on are server-rendered with minimal client-side code, this module attaches itself directly to the `window` object as of now, because there's no advanced client-side infrastructure to integrate with on these pages. In the future, this project can hopefully be a proper NPM package, so others can more easily use it.
+This area chart has time as the x-axis dimension, with an important feature: There's a tick/label for each month — regardless of how many months have passed in the timespan of the chart. This means that the amount of ticks and labels in the x-axis is variable and automatic.
+
+Regarding the implementation: Because of the fact that both sites that I intended to use this on are server-rendered with minimal client-side code, this module attaches itself directly to the `window` object as of now, because there's no advanced client-side infrastructure to integrate with on these pages. In the future, this project can hopefully be a proper NPM package, so others can more easily use it.
 
 ## Usage
 (Sorry: This is non-standard and weird — for now — because of the above reason. 👆🏼)
 
-Build the project, and copy everything in the `build` folder to the appropriate directory in your project — probably an `assets` directory. Use the `entryPoints` section of the `asset-manifest.json` file to find the list of files to include as `link` and `script` elements.
+Build the project, and copy everything in the `build` folder to the appropriate directory in your project — probably an `assets` directory. Then, use the `entrypoints` section of the `asset-manifest.json` file to find the list of files to include as `link` and `script` elements.
 
 The script will expose the following function: 
 ```typescript
@@ -42,6 +44,7 @@ interface CompressedChartData {
 				[date, plays],
 				[date, plays],
 				[date, plays],
+				// Example: ["2022-01-01", 5],
 				/* ... */
 			];
 		}
@@ -54,7 +57,7 @@ Once the function is called with the proper arguments, a React instance will be 
 
 ## Configuration
 
-Even though this is a relatively simple project, there are still a bunch of configuration options that can be included in the `config` prop of the chart data object!
+Even though this is a relatively simple project, there are still a bunch of configuration options that can be included in the `config` prop of the chart data object:
 
 | Option | Default value | Explanation |
 |--------|---------------|-------------|
@@ -85,10 +88,14 @@ Even though this is a relatively simple project, there are still a bunch of conf
 
 ## Caveats
 
-This library is still very young, and still shows signs of made for a very specific use case. This means that there are some things about it that are not perfect, but may be fixed in the near future:
+This library is still very young, and very much shows signs of being made for a very specific use case. This means that there are some things about it that are not perfect, but may be fixed in the near future:
 
-* There's no proper NPM package for this. As explained in the intro, this was mainly made to be an addition to certain pages that are largely static when it comes to the client-side. So, as it is right now, it's not made to fit into a larger front end web infrastructure with a package manager. This should not be a big deal to change. 
-* It's mainly made to show track plays per day, only ever encountering relatively small values, meaning this charting library does not support any values higher than 15 (at least in theory, I haven't tested it)
-* The X axis is definitely hardcoded to be a time axis. That's part of the simplicity of the project.
+* **There's no proper NPM package for this.** As explained in the intro, this was mainly made to be an addition to certain pages that are largely static when it comes to the client-side. So, as it is right now, it's not made to fit into a larger front end web infrastructure with a package manager. This should not be a big deal to change. 
+* It's mainly made to show track plays per day, only ever encountering relatively small values, meaning this charting library **does not support any values higher than 15** (at least in theory, I haven't tested it.)
+* **The X axis is definitely hardcoded to be a time axis.** That's part of the simplicity of the project.
 
 But hey, this project may not apply to everyone — even still, I wanted to share the code in the hopes somebody can use it for something! Yay! 🎉
+
+## License
+
+MIT
