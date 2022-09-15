@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@types/d3-path": "^3.0.0",
-    "@types/jest": "^29.0.1",
-    "@types/node": "^18.7.16",
-    "@types/react": "^18.0.19",
+    "@types/jest": "^29.0.2",
+    "@types/node": "^18.7.18",
+    "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
     "clsx": "^1.2.1",
     "d3-path": "^3.0.1",
