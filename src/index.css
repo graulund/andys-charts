@@ -4,14 +4,24 @@ body.andys-charts-debug {
 	font-family: sans-serif;
 }
 
-body.andys-charts-debug .andy-chart-root {
+body.andys-charts-debug .andys-charts-debug-container {
 	max-width: 1000px;
 	margin: 100px auto;
+}
+
+body.andys-charts-debug .andy-chart-root {
 	background-color: #fff;
+	margin: 2rem 0;
 }
 
 body.andys-charts-debug .andy-chart-root:empty {
 	margin: 0 auto;
+}
+
+body.andys-charts-debug p {
+	font-size: .875rem;
+	line-height: 1.125rem;
+	color: #666;
 }
 
 body.andys-charts-debug--dark {
