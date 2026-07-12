@@ -8,12 +8,53 @@ This is the charting library used on my sites [Playte](https://playte.co/andy/mu
 
 This area chart has time as the x-axis dimension, with an important feature: There's a tick/label for each month — regardless of how many months have passed in the timespan of the chart. This means that the amount of ticks and labels in the x-axis is variable and automatic.
 
-Regarding the implementation: Because of the fact that both sites that I intended to use this on are server-rendered with minimal client-side code, this module attaches itself directly to the `window` object as of now, because there's no advanced client-side infrastructure to integrate with on these pages. In the future, this project can hopefully be a proper NPM package, so others can more easily use it.
+There are two ways to use the library:
 
-## Usage
-(Sorry: This is non-standard and weird — for now — because of the above reason. 👆🏼)
+1. **As an npm package** (`npm install andys-charts`) in a React app
+2. **As a self-contained script bundle** that renders a chart into a DOM element via `window.createAndyCharts`, for server-rendered pages with no client-side React infrastructure
 
-Build the project, and copy everything in the `build` folder to the appropriate directory in your project — probably an `assets` directory. Then, use the `entrypoints` section of the `asset-manifest.json` file to find the list of files to include as `link` and `script` elements.
+## Usage as an npm package
+
+```
+npm install andys-charts
+```
+
+React 18 or newer is required (`react` and `react-dom` are peer dependencies). The package ships as an ES module with TypeScript declarations. The component's styles are compiled into the module and injected into the document automatically — no separate stylesheet import is needed.
+
+```tsx
+import { Chart, unpackDataPointsInDataSets } from "andys-charts";
+import type { ChartConfig, CompressedChartDataSet } from "andys-charts";
+
+function TrackChart({
+	config,
+	dataSets
+}: {
+	config: Partial<ChartConfig>;
+	dataSets: CompressedChartDataSet[];
+}) {
+	return (
+		<Chart
+			config={config}
+			dataSets={unpackDataPointsInDataSets(dataSets)}
+		/>
+	);
+}
+```
+
+The `Chart` component takes a (partial) config object (see [Configuration](#configuration) below) and a list of data sets. If your data sets are in the "compressed" form described below (lists of `[date, plays]` tuples), run them through `unpackDataPointsInDataSets` first.
+
+Exports:
+
+- `Chart` — the chart React component (client-side only; render it after mount in SSR frameworks)
+- `unpackDataPointsInDataSets`, `unpackCompressedDataPoints` — data helpers
+- `defaultConfig` — the default chart configuration
+- Types: `ChartProps`, `ChartConfig`, `ChartDataSet`, `ChartDataPoint`, `CompressedChartData`, `CompressedChartDataSet`, `CompressedChartDataPoint`, `TrackArtist`, `TrackArtists`
+
+## Usage as a script bundle (`window.createAndyCharts`)
+
+This mode exists for server-rendered pages that have no client-side React setup: The bundle includes React and exposes a single global function.
+
+Build the project with `npm run build:legacy`, and copy everything in the `build` folder to the appropriate directory in your project — probably an `assets` directory. Then, use the `entrypoints` section of the `asset-manifest.json` file to find the list of files to include as `link` and `script` elements.
 
 The script will expose the following function: 
 ```typescript
@@ -22,9 +63,13 @@ window.createAndyCharts = function (chartData: CompressedChartData, rootQuerySel
 }
 ```
 
-The second argument, `rootQuerySelector`, is the query selector of the DOM element you'd like to use as root element for the chart. 
+The second argument, `rootQuerySelector`, is the query selector of the DOM element you'd like to use as root element for the chart (defaults to `.andy-chart-root`). 
 
-The first argument, `chartData`, is an object containing the data sets themselves, along with a configuration object (see more about that below). It has the following structure, expressed in TypeScript pseudocode:
+The first argument, `chartData`, is an object containing the data sets themselves, along with a configuration object.
+
+## Chart data
+
+Chart data (the `chartData` argument in the script bundle mode, or the `config` and `dataSets` props in npm package mode) has the following structure, expressed in TypeScript pseudocode:
 
 ```typescript
 interface CompressedChartData {
@@ -55,7 +100,7 @@ interface CompressedChartData {
 }
 ```
 
-Once the function is called with the proper arguments, a React instance will be added to the root element, and it will hopefully contain a beautiful area chart!
+Once the chart is rendered with the proper arguments, it will hopefully contain a beautiful area chart!
 
 ## Configuration
 
@@ -88,11 +133,19 @@ Even though this is a relatively simple project, there are still a bunch of conf
 | `singleFillOpacity` | 0.4 | Use this fill opacity when there's only a single data set in the chart. Overrides the `fillOpacity` setting when there's only one data set |
 | `todayYmd` | Now | Today's date, specified in `YYYY-MM-DD` string format. Defaults to now |
 
+## Development
+
+- `npm start` — dev server with a demo page ([index.html](index.html))
+- `npm run typecheck` — TypeScript check
+- `npm run build:lib` — build the npm package (ESM + type declarations) into `dist`
+- `npm run build:legacy` — build the `window.createAndyCharts` script bundle into `build`
+- `npm run build` — both of the above
+- `npm run storybook` — component stories
+
 ## Caveats
 
-This library is still very young, and very much shows signs of being made for a very specific use case. This means that there are some things about it that are not perfect, but may be fixed in the near future:
+This library very much shows signs of being made for a very specific use case. This means that there are some things about it that are not perfect, but may be fixed in the near future:
 
-* **There's no proper NPM package for this.** As explained in the intro, this was mainly made to be an addition to certain pages that are largely static when it comes to the client-side. So, as it is right now, it's not made to fit into a larger front end web infrastructure with a package manager. This should not be a big deal to change. 
 * It's mainly made to show track plays per day, only ever encountering relatively small values, meaning this charting library **does not support any values higher than 15** (at least in theory, I haven't tested it.)
 * **The X axis is definitely hardcoded to be a time axis.** That's part of the simplicity of the project.
 

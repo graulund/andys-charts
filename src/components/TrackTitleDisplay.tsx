@@ -66,9 +66,9 @@ function ArtistList({ artists }: ArtistListProps) {
 ArtistList.displayName = "TrackTitleDisplay.ArtistList";
 
 interface TrackTitleDisplayProps {
-	artists?: TrackArtists;
-	dark: boolean;
-	language: Language;
+	artists?: TrackArtists | null;
+	dark?: boolean;
+	language?: Language;
 	mainClassName?: string;
 	title: string;
 }
@@ -79,8 +79,8 @@ interface TrackTitleDisplayProps {
  */
 function TrackTitleDisplay({
 	artists,
-	dark,
-	language,
+	dark = false,
+	language = "en",
 	mainClassName,
 	title
 }: TrackTitleDisplayProps) {
@@ -157,12 +157,5 @@ function TrackTitleDisplay({
 		</span>
 	);
 }
-
-TrackTitleDisplay.defaultProps = {
-	artists: null,
-	dark: false,
-	language: "en",
-	mainClassName: undefined
-};
 
 export default TrackTitleDisplay;

@@ -20,7 +20,7 @@ import { ChartDataPointTitles, ChartDataSet, ChartLegendTrackItem } from "../lib
 import styles from "./Chart.module.css";
 
 export interface ChartProps {
-	config: Partial<ChartConfig>;
+	config?: Partial<ChartConfig> | null;
 	dataSets: ChartDataSet[];
 }
 
@@ -187,9 +187,5 @@ function Chart({
 		</div>
 	);
 }
-
-Chart.defaultProps = {
-	config: null
-};
 
 export default Chart;

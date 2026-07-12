@@ -42,9 +42,4 @@ function ChartHighlightMarker({ value }: ChartHighlightMarkerProps) {
 	);
 }
 
-ChartHighlightMarker.defaultProps = {
-	isSingle: false,
-	value: null
-};
-
 export default ChartHighlightMarker;

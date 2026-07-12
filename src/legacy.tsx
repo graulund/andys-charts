@@ -9,10 +9,9 @@ import { CompressedChartData } from "./lib/types";
 
 let rendered = false;
 
-// This is hardcoded as a window prop for now, so it can be implemented in a
-// server-based page without React.
-
-// TODO: Separate React module into its own library repo (and npm package)
+// Legacy global entry point: The chart initializer is exposed as a window
+// prop, so it can be implemented in a server-based page without React.
+// React apps should use the npm package entry (src/index.ts) instead.
 declare global {
 	interface Window { createAndyCharts: any; }
 }
