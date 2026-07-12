@@ -50,7 +50,7 @@ interface MonthInfo {
 }
 
 function pad(num: string | number) {
-	if (num < 10) {
+	if (Number(num) < 10) {
 		return `0${num}`;
 	}
 

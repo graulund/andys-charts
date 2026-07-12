@@ -77,8 +77,4 @@ function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 	);
 }
 
-ChartHighlightInfo.defaultProps = {
-	value: null
-};
-
 export default ChartHighlightInfo;

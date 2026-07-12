@@ -57,6 +57,6 @@ export const WithAsArtistName = Template.bind({});
 WithAsArtistName.args = {
 	title: "Test Track Title",
 	artists: {
-		as: { name: "Puff Daddy", id: 1 }
+		as: { name: "Puff Daddy", id: 1 }
 	}
 };
