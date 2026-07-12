@@ -1,6 +1,6 @@
 {
 	"name": "andys-charts",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "A simple charting library visualizing plays per day for musical tracks, made out of React, TypeScript and SVG.",
 	"author": "Andy Graulund <andy@graulund.com>",
 	"license": "MIT",
