@@ -2,7 +2,14 @@
 	max-width: 1000px;
 }
 
-.main, .inner {
+.main {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: start;
+	position: relative;
+}
+
+.inner {
 	position: relative;
 }
 
@@ -11,8 +18,7 @@
 }
 
 .valueAxis {
-	position: absolute;
-	top: 0;
-	left: 0;
-	background-color: #fff;
+	display: block;
+	grid-column: 1;
+	grid-row: 1;
 }

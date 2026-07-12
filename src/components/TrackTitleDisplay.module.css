@@ -1,16 +1,16 @@
 .main {
-	color: #666;
+	color: var(--andys-charts-title, #666);
 	font-weight: bold;
 }
 
 .main.darkMain {
-	color: #ccc;
+	color: var(--andys-charts-title-dark, #ccc);
 }
 
 .artist {
-	color: #777;
+	color: var(--andys-charts-artist, #777);
 }
 
 .darkContainer .artist {
-	color: #aaa;
+	color: var(--andys-charts-artist-dark, #aaa);
 }

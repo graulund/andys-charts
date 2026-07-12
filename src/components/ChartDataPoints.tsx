@@ -28,7 +28,7 @@ function ChartDataPoints({
 
 	return (
 		<>
-			{ segments.map((segment, segmentIndex) => (
+			{segments.map((segment, segmentIndex) => (
 				<ChartDataPointsSegment
 					color={color}
 					dataPoints={segment}
@@ -36,7 +36,7 @@ function ChartDataPoints({
 					index={index}
 					key={`${index}-${segmentIndex}`}
 				/>
-			)) }
+			))}
 		</>
 	);
 }

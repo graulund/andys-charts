@@ -13,12 +13,22 @@ let rendered = false;
 // prop, so it can be implemented in a server-based page without React.
 // React apps should use the npm package entry (src/index.ts) instead.
 declare global {
-	interface Window { createAndyCharts: any; }
+	interface Window {
+		createAndyCharts: (
+			chartData: CompressedChartData,
+			rootQuerySelector?: string
+		) => void;
+	}
 }
 
-window.createAndyCharts = function (chartData: CompressedChartData, rootQuerySelector: string) {
+window.createAndyCharts = function (
+	chartData: CompressedChartData,
+	rootQuerySelector?: string
+) {
 	if (rendered) {
-		console.warn("Tried to create Andy charts, but they were already rendered");
+		console.warn(
+			"Tried to create Andy charts, but they were already rendered"
+		);
 		return;
 	}
 
@@ -29,7 +39,9 @@ window.createAndyCharts = function (chartData: CompressedChartData, rootQuerySel
 	);
 
 	if (!rootEl) {
-		console.warn("Could not initialize Andy charts because the root element did not exist");
+		console.warn(
+			"Could not initialize Andy charts because the root element did not exist"
+		);
 		return;
 	}
 

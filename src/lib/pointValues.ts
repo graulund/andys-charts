@@ -84,7 +84,9 @@ export function getHighlightedValue(
 	values: ChartDataPointValues[],
 	dataSets: ChartDataSet[]
 ): ChartDataPointTitles | undefined {
-	const value = values.find(({ valueKey }) => valueKey === highlightedValueKey);
+	const value = values.find(
+		({ valueKey }) => valueKey === highlightedValueKey
+	);
 
 	if (value) {
 		return {

@@ -1,15 +1,15 @@
 .axisLine {
-	stroke: #ccc;
+	stroke: var(--andys-charts-axis-line, #ccc);
 	shape-rendering: crispEdges;
 	fill: none;
 }
 
 .axisLine.darkAxisLine {
-	stroke: #444;
+	stroke: var(--andys-charts-axis-line-dark, #444);
 }
 
 .axisLabel {
-	fill: #aaa;
+	fill: var(--andys-charts-axis-label, #aaa);
 	font-size: 11px;
 }
 
@@ -18,7 +18,7 @@
 }
 
 .axisLabel.darkAxisLabel {
-	fill: #666;
+	fill: var(--andys-charts-axis-label-dark, #666);
 }
 
 .axisLabel.hiddenLabel {

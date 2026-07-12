@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect } from "react";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
 
@@ -12,23 +12,17 @@ interface ChartScrollContainerProps {
  * Renders a container that allows the chart to be scrolled horizontally in narrow viewports
  */
 function ChartScrollContainer({ children }: ChartScrollContainerProps) {
-	const containerEl = useRef<HTMLDivElement>(null);
-
-	const { config, setScrollLeft } = useContext(ChartContext) as ChartContextContent;
-	const { chartWidth, showEndFirst } = config;
-
-	const onScroll = () => {
-		const el = containerEl.current;
-
-		if (!el) {
-			return;
-		}
-
-		setScrollLeft(el.scrollLeft);
-	};
+	const {
+		config,
+		mainAreaWidth,
+		scrollContainerRef,
+		setHighlightedX,
+		setHighlightedValueKey
+	} = useContext(ChartContext) as ChartContextContent;
+	const { showEndFirst } = config;
 
 	useEffect(() => {
-		const el = containerEl.current;
+		const el = scrollContainerRef.current;
 
 		if (!el) {
 			return;
@@ -38,24 +32,25 @@ function ChartScrollContainer({ children }: ChartScrollContainerProps) {
 
 		if (showEndFirst) {
 			const { width } = el.getBoundingClientRect();
-			const endPos = chartWidth - width;
+			const endPos = mainAreaWidth - width;
 
 			if (endPos > 0) {
 				el.scrollTo(endPos, 0);
 			}
 		}
-
-		el.addEventListener("scroll", onScroll);
-
-		return () => el.removeEventListener("scroll", onScroll);
-
-		// (Should only run on mount)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [mainAreaWidth, scrollContainerRef, showEndFirst]);
 
 	return (
-		<div className={styles.scrollContainer} ref={containerEl}>
-			{ children }
+		<div
+			className={styles.scrollContainer}
+			data-testid="chart-scroll-container"
+			ref={scrollContainerRef}
+			onScroll={() => {
+				setHighlightedX(null);
+				setHighlightedValueKey(null);
+			}}
+		>
+			{children}
 		</div>
 	);
 }

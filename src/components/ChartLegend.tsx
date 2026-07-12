@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import clsx from "clsx";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
 import TrackTitleDisplay from "./TrackTitleDisplay";
+import { classNames } from "../lib/classNames";
 import { ChartLegendTrackItem } from "../lib/types";
 
 import styles from "./ChartLegend.module.css";
@@ -14,7 +14,7 @@ interface ChartLegendProps {
 /**
  * Renders the legend under the chart, with the user allowed to highlight
  * a single set of data points
-*/
+ */
 function ChartLegend({ tracks }: ChartLegendProps) {
 	const {
 		config,
@@ -28,24 +28,24 @@ function ChartLegend({ tracks }: ChartLegendProps) {
 		return null;
 	}
 
-	const itemClassName = clsx(styles.item, {
-		[styles.darkItem]: dark
-	});
+	const itemClassName = classNames(styles.item, dark && styles.darkItem);
 
-	const mainClassName = clsx(styles.itemMain, linkMainClassName);
+	const mainClassName = classNames(styles.itemMain, linkMainClassName);
 
 	return (
-		<div className={styles.legend} aria-label="Legend">
+		<div className={styles.legend} role="group" aria-label="Chart legend">
 			<ul className={styles.list}>
-				{ tracks.map(({ artists, color, index, title, url }) => {
-					const mouseOut = () => {
+				{tracks.map(({ artists, color, index, title, url }) => {
+					const leave = () => {
 						if (highlightedIndex === index) {
 							setHighlightedIndex(undefined);
 						}
 					};
 
-					const ItemComponent = url ? "a" : "span";
-					const itemProps = url ? { href: url } : {};
+					const ItemComponent = url ? "a" : "button";
+					const itemProps = url
+						? { href: url }
+						: { type: "button" as const };
 
 					return (
 						<li className={styles.listItem} key={index}>
@@ -53,8 +53,12 @@ function ChartLegend({ tracks }: ChartLegendProps) {
 								className={itemClassName}
 								{...itemProps}
 								style={{ borderColor: color }}
-								onMouseOver={() => setHighlightedIndex(index)}
-								onMouseOut={mouseOut}
+								onPointerEnter={() =>
+									setHighlightedIndex(index)
+								}
+								onPointerLeave={leave}
+								onFocus={() => setHighlightedIndex(index)}
+								onBlur={leave}
 							>
 								<TrackTitleDisplay
 									artists={artists}
@@ -66,7 +70,7 @@ function ChartLegend({ tracks }: ChartLegendProps) {
 							</ItemComponent>
 						</li>
 					);
-				}) }
+				})}
 			</ul>
 		</div>
 	);

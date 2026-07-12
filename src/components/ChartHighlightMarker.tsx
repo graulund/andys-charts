@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import clsx from "clsx";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
+import { classNames } from "../lib/classNames";
 
 import styles from "./ChartHighlightMarker.module.css";
 import { ChartDataPointTitles } from "../lib/types";
@@ -29,16 +29,14 @@ function ChartHighlightMarker({ value }: ChartHighlightMarkerProps) {
 		x = getXPositionFromYmd(ymd) + 0.5;
 	}
 
-	const className = clsx(styles.marker, {
-		[styles.darkMarker]: dark,
-		[styles.noMarker]: !value
-	});
+	const className = classNames(
+		styles.marker,
+		dark && styles.darkMarker,
+		!value && styles.noMarker
+	);
 
 	return (
-		<div
-			className={className}
-			style={{ left: `${x}px`, top: `${y}px` }}
-		/>
+		<div className={className} style={{ left: `${x}px`, top: `${y}px` }} />
 	);
 }
 

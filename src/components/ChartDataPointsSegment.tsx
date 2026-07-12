@@ -1,10 +1,10 @@
 import { useContext, useMemo } from "react";
-import clsx from "clsx";
-import { path } from "d3-path";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
+import { classNames } from "../lib/classNames";
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
 import { ChartDataPoint } from "../lib/types";
+import { createSvgPath } from "../lib/svgPath";
 
 import styles from "./ChartDataPoints.module.css";
 
@@ -28,6 +28,7 @@ function ChartDataPointsSegment({
 	index
 }: ChartDataPointsSegmentProps) {
 	const {
+		clipPathId,
 		config,
 		firstDate,
 		getXPositionFromDaysSinceStart,
@@ -37,11 +38,7 @@ function ChartDataPointsSegment({
 		totalDays
 	} = useContext(ChartContext) as ChartContextContent;
 
-	const {
-		chartTopHeight: offsetTop,
-		dark,
-		dataMaskId
-	} = config;
+	const { chartTopHeight: offsetTop, dark } = config;
 
 	const startOffset = useMemo(() => {
 		const overallStart = dateFromYmd(firstDate);
@@ -51,10 +48,10 @@ function ChartDataPointsSegment({
 
 	const chartBottomY = offsetTop + mainAreaHeight;
 	const manyDays = totalDays >= minDaysForThinLines;
-	const maskSelector = `url(#${dataMaskId})`;
+	const clipPathSelector = `url(#${clipPathId})`;
 
 	const { areaPath, linePath } = useMemo(() => {
-		const p = path();
+		const p = createSvgPath();
 		let begun = false;
 		let firstX: number | undefined;
 		let firstY: number | undefined;
@@ -147,36 +144,36 @@ function ChartDataPointsSegment({
 
 	// Fade if this segment is not part of the highlighted track index
 
-	const faded = typeof highlightedIndex === "number" && highlightedIndex !== index;
+	const faded =
+		typeof highlightedIndex === "number" && highlightedIndex !== index;
 	const colorAttr = !faded ? color : undefined;
 	const areaOpacity = !faded ? fillOpacity : undefined;
 
-	const areaClassName = clsx(styles.area, {
-		[styles.fadedArea]: faded
-	});
+	const areaClassName = classNames(styles.area, faded && styles.fadedArea);
 
-	const lineClassName = clsx(styles.line, {
-		[styles.darkLine]: dark,
-		[styles.fadedLine]: faded,
-		[styles.thinLine]: manyDays
-	});
+	const lineClassName = classNames(
+		styles.line,
+		dark && styles.darkLine,
+		faded && styles.fadedLine,
+		manyDays && styles.thinLine
+	);
 
 	return (
 		<>
-			{ fillOpacity > 0 && (
+			{fillOpacity > 0 && (
 				<path
 					className={areaClassName}
 					d={areaPath}
 					fill={colorAttr}
 					opacity={areaOpacity}
-					mask={maskSelector}
+					clipPath={clipPathSelector}
 				/>
-			) }
+			)}
 			<path
 				className={lineClassName}
 				d={linePath}
 				stroke={colorAttr}
-				mask={maskSelector}
+				clipPath={clipPathSelector}
 			/>
 		</>
 	);

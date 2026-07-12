@@ -5,7 +5,7 @@ import { ChartConfig } from "./config";
  */
 export interface TrackArtist {
 	name: string;
-	id: number;
+	id?: number;
 }
 
 /**
@@ -20,10 +20,11 @@ export interface TrackArtists {
 }
 
 /** A chart data set without data points */
-interface ChartDataSetBase { // TODO: Make this independent of track?
+interface ChartDataSetBase {
+	// TODO: Make this independent of track?
 	title: string;
-	artists?: TrackArtists;
-	url?: string;
+	artists?: TrackArtists | null;
+	url?: string | null;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import clsx from "clsx";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
+import { classNames } from "../lib/classNames";
 import { dateFromYmd, formatDate } from "../lib/time";
 import { ChartDataPointTitles } from "../lib/types";
 
@@ -12,17 +12,14 @@ const infoVerticalOffset = 20;
 const windowWidthBuffer = 250;
 
 interface ChartHighlightInfoProps {
-	value?: ChartDataPointTitles
+	value?: ChartDataPointTitles;
 }
 
 /** Renders an info bubble, displaying additional info about a specific data point */
 function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
-	const {
-		config,
-		getXPositionFromDate,
-		getYBottomPosition,
-		scrollLeft
-	} = useContext(ChartContext) as ChartContextContent;
+	const { config, getYBottomPosition, highlightedX } = useContext(
+		ChartContext
+	) as ChartContextContent;
 
 	const { isSingle, language } = config;
 
@@ -34,11 +31,7 @@ function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 
 	const titles = value?.titles || [];
 	const indexes = value?.indexes || [];
-	const maxX = window.innerWidth - windowWidthBuffer;
-
-	const infoClassName = clsx(styles.info, {
-		[styles.noInfo]: !value
-	});
+	const infoClassName = classNames(styles.info, !value && styles.noInfo);
 
 	// Rendering an info bubble
 
@@ -47,7 +40,7 @@ function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 		y = getYBottomPosition(plays) + infoVerticalOffset;
 
 		const date = dateFromYmd(ymd);
-		x = Math.min(maxX, getXPositionFromDate(date) + infoHorizontalOffset - scrollLeft);
+		x = (highlightedX || 0) + infoHorizontalOffset;
 
 		if (language === "da") {
 			const playsName = plays === 1 ? "afspilning" : "afspilninger";
@@ -60,19 +53,23 @@ function ChartHighlightInfo({ value }: ChartHighlightInfoProps) {
 
 	return (
 		<div
+			aria-live="polite"
+			aria-atomic="true"
 			className={infoClassName}
-			style={{ left: `${x}px`, bottom: `${y}px` }}
+			data-testid="chart-highlight-info"
+			style={{
+				left: `clamp(0px, ${x}px, calc(100% - ${windowWidthBuffer}px))`,
+				bottom: `${y}px`
+			}}
 		>
-			{ !isSingle ? (
+			{!isSingle ? (
 				<ul className={styles.tracks}>
-					{ titles.map((title, i) => (
-						<li key={indexes[i]}>{ title }</li>
-					)) }
+					{titles.map((title, i) => (
+						<li key={indexes[i]}>{title}</li>
+					))}
 				</ul>
-			) : null }
-			<p className={styles.playInfo}>
-				{ playInfoString }
-			</p>
+			) : null}
+			<p className={styles.playInfo}>{playInfoString}</p>
 		</div>
 	);
 }

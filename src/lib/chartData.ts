@@ -9,11 +9,7 @@ import {
 
 import { ChartConfig } from "./config";
 
-import {
-	ChartDataPoint,
-	ChartDataMap,
-	ChartDataSet
-} from "./types";
+import { ChartDataPoint, ChartDataMap, ChartDataSet } from "./types";
 
 // This file has various helper methods for calculating the chart facts
 
@@ -27,7 +23,9 @@ function chartDataPoint(date: string, plays: number): ChartDataPoint {
  * @param dataPoints List of data points
  * @returns ChartDataMap
  */
-function convertDataPointsToDateMap(dataPoints: ChartDataPoint[]): ChartDataMap {
+function convertDataPointsToDateMap(
+	dataPoints: ChartDataPoint[]
+): ChartDataMap {
 	return (dataPoints || []).reduce<ChartDataMap>((map, data) => {
 		map[data.date] = data.plays;
 		return map;
@@ -43,8 +41,17 @@ function getExtremeDateInDataPoints(
 		return null;
 	}
 
-	const item = dataPoints[type === "earliest" ? 0 : dataPoints.length - 1];
-	return dateFromYmd(item.date);
+	const times = dataPoints
+		.map(({ date }) => dateFromYmd(date).getTime())
+		.filter(Number.isFinite);
+
+	if (!times.length) {
+		return null;
+	}
+
+	return new Date(
+		type === "earliest" ? Math.min(...times) : Math.max(...times)
+	);
 }
 
 /** Get either earliest or latest date with data across several lists of data points */
@@ -52,7 +59,8 @@ function getExtremeDateInDataPointLists(
 	dataPointLists: ChartDataPoint[][],
 	type: "earliest" | "latest"
 ): Date | null {
-	const extremeDates = dataPointLists.map((data) => getExtremeDateInDataPoints(data, type))
+	const extremeDates = dataPointLists
+		.map((data) => getExtremeDateInDataPoints(data, type))
 		.filter((d) => !!d) as Date[];
 
 	const mathFunc = type === "earliest" ? "min" : "max";
@@ -88,47 +96,49 @@ export function padChartDataPointLists(
 		return [];
 	}
 
-	let startDate: Date;
-	let endDate: Date;
 	const today = todayYmd ? dateFromYmd(todayYmd) : todayDate();
 
 	// If not overridden, analyze the data's scope (overall earliest and latest play times),
 	// and calculate start and end dates from that, according to our rules
 
-	if (overrideStartYmd && overrideEndYmd) {
-		startDate = dateFromYmd(overrideStartYmd);
-		endDate = dateFromYmd(overrideEndYmd);
-	} else {
-		const earliestDate = getExtremeDateInDataPointLists(dataPointLists, "earliest");
-		const latestDate = getExtremeDateInDataPointLists(dataPointLists, "latest");
+	const earliestDate = getExtremeDateInDataPointLists(
+		dataPointLists,
+		"earliest"
+	);
+	const latestDate = getExtremeDateInDataPointLists(dataPointLists, "latest");
 
-		if (!earliestDate || !latestDate) {
-			return [];
-		}
-
-		const earliestDateWithPadding = prevDay(earliestDate);
-		const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
-
-		// Only include padding at the ends if the ends are within scope
-		// Otherwise the hard cutoff is visualized by not having padding
-
-		endDate = new Date(Math.min(
-			latestDateWithPadding.getTime(),
-			today.getTime()
-		));
-
-		const minDaysAgo = offsetDate(endDate, -1 * minDays);
-		const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
-
-		startDate = new Date(Math.min(
-			minDaysAgo.getTime(),
-			Math.max(maxDaysAgo.getTime(), earliestDateWithPadding.getTime())
-		));
+	if (!earliestDate || !latestDate) {
+		return [];
 	}
+
+	const earliestDateWithPadding = prevDay(earliestDate);
+	const latestDateWithPadding = offsetDate(latestDate, maxEndPaddingDays);
+
+	// Only include padding at the ends if the ends are within scope.
+	// Otherwise the hard cutoff is visualized by not having padding.
+
+	const endDate = overrideEndYmd
+		? dateFromYmd(overrideEndYmd)
+		: new Date(Math.min(latestDateWithPadding.getTime(), today.getTime()));
+
+	const minDaysAgo = offsetDate(endDate, -1 * minDays);
+	const maxDaysAgo = offsetDate(endDate, -1 * maxDays);
+
+	const startDate = overrideStartYmd
+		? dateFromYmd(overrideStartYmd)
+		: new Date(
+				Math.min(
+					minDaysAgo.getTime(),
+					Math.max(
+						maxDaysAgo.getTime(),
+						earliestDateWithPadding.getTime()
+					)
+				)
+			);
 
 	return dataPointLists
 		.map((data) => padChartDataPoints(data, startDate, endDate))
-		.filter((l) => !!l) as ChartDataPoint[][]; // There are no more nulls in this list now
+		.map((data) => data || []);
 }
 
 /**
@@ -139,7 +149,11 @@ export function padChartDataPointLists(
  * @param endDate Chart end date
  * @returns Padded and limited list of data points
  */
-export function padChartDataPoints(dataPoints: ChartDataPoint[], startDate: Date, endDate: Date) {
+export function padChartDataPoints(
+	dataPoints: ChartDataPoint[],
+	startDate: Date,
+	endDate: Date
+) {
 	if (!dataPoints?.length) {
 		return null;
 	}
@@ -172,15 +186,19 @@ export function filterDataSets(
 	processedDataPointLists: ChartDataPoint[][],
 	minValues = 2
 ): ChartDataSet[] {
-	return processedDataPointLists.reduce<ChartDataSet[]>((out, dataPoints, index) => {
-		const hasMinValues = dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
+	return processedDataPointLists.reduce<ChartDataSet[]>(
+		(out, dataPoints, index) => {
+			const hasMinValues =
+				dataPoints.filter(({ plays }) => plays > 0).length >= minValues;
 
-		if (hasMinValues) {
-			out.push({ ...dataSets[index], dataPoints });
-		}
+			if (hasMinValues) {
+				out.push({ ...dataSets[index], dataPoints });
+			}
 
-		return out;
-	}, []);
+			return out;
+		},
+		[]
+	);
 }
 
 /**
@@ -195,45 +213,48 @@ export function getPaddedDataPointSegments(dataPoints: ChartDataPoint[]) {
 	let lastDataPoint: ChartDataPoint | null = null;
 	let currentSegment: ChartDataPoint[] | null = null;
 
-	const segments = dataPoints.reduce<ChartDataPoint[][]>((segments, dataPoint, index) => {
-		const { plays } = dataPoint;
+	const segments = dataPoints.reduce<ChartDataPoint[][]>(
+		(segments, dataPoint, index) => {
+			const { plays } = dataPoint;
 
-		if (plays > 0) {
-			// Date has value
-			if (!currentSegment) {
-				// Segment opens
-				currentSegment = [];
+			if (plays > 0) {
+				// Date has value
+				if (!currentSegment) {
+					// Segment opens
+					currentSegment = [];
 
-				if (lastDataPoint) {
-					// Push first zero
+					if (lastDataPoint) {
+						// Push first zero
+						currentSegment.push(lastDataPoint);
+					}
+				} else if (numZeroes > 0 && lastDataPoint) {
+					// Push single middle zero
 					currentSegment.push(lastDataPoint);
 				}
-			} else if (numZeroes > 0 && lastDataPoint) {
-				// Push single middle zero
-				currentSegment.push(lastDataPoint);
+
+				currentSegment.push(dataPoint);
+				numZeroes = 0;
+			} else if (++numZeroes >= 2 && currentSegment) {
+				// Date has no value, and at least two zeroes behind us now
+
+				// Push last zero
+				if (lastDataPoint) {
+					currentSegment.push(lastDataPoint);
+				}
+
+				// Segment closes
+				segments.push(currentSegment);
+				currentSegment = null;
+			} else if (index === dataPoints.length - 1 && currentSegment) {
+				// If the last item is a zero, remember to push that
+				currentSegment.push(dataPoint);
 			}
 
-			currentSegment.push(dataPoint);
-			numZeroes = 0;
-		} else if (++numZeroes >= 2 && currentSegment) {
-			// Date has no value, and at least two zeroes behind us now
-
-			// Push last zero
-			if (lastDataPoint) {
-				currentSegment.push(lastDataPoint);
-			}
-
-			// Segment closes
-			segments.push(currentSegment);
-			currentSegment = null;
-		} else if (index === dataPoints.length - 1 && currentSegment) {
-			// If the last item is a zero, remember to push that
-			currentSegment.push(dataPoint);
-		}
-
-		lastDataPoint = dataPoint;
-		return segments;
-	}, []);
+			lastDataPoint = dataPoint;
+			return segments;
+		},
+		[]
+	);
 
 	if (currentSegment) {
 		segments.push(currentSegment);

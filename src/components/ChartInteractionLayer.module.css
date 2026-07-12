@@ -1,0 +1,7 @@
+.layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	touch-action: pan-x pinch-zoom;
+}
