@@ -1,6 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 
-import ChartContext, { ChartContextContent, ChartContextData } from "./ChartContext";
+import ChartContext, {
+	ChartContextContent,
+	ChartContextData
+} from "./ChartContext";
 import { dateFromYmd, daysBetweenDates } from "../lib/time";
 
 interface ChartDataProps extends ChartContextData {
@@ -22,18 +25,15 @@ function ChartData({ children, ...data }: ChartDataProps) {
 		totalDays
 	} = data;
 
-	const {
-		chartBottomHeight: offsetBottom,
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
-	} = config;
+	const { chartBottomHeight: offsetBottom, chartTopHeight: offsetTop } =
+		config;
 
 	const start = useMemo(() => dateFromYmd(firstDate), [firstDate]);
 
 	// Calculating coords functions
 
-	const unitWidth = 1 / totalDays * mainAreaWidth;
-	const unitHeight = 1 / maxValue * mainAreaHeight;
+	const unitWidth = (1 / totalDays) * mainAreaWidth;
+	const unitHeight = (1 / maxValue) * mainAreaHeight;
 
 	const getYPosition = useCallback(
 		(val: number) => {
@@ -55,9 +55,9 @@ function ChartData({ children, ...data }: ChartDataProps) {
 	const getXPositionFromDaysSinceStart = useCallback(
 		(days: number) => {
 			const perc = days / totalDays;
-			return offsetLeft + perc * mainAreaWidth;
+			return perc * mainAreaWidth;
 		},
-		[mainAreaWidth, offsetLeft, totalDays]
+		[mainAreaWidth, totalDays]
 	);
 
 	const getXPositionFromDate = useCallback(
@@ -75,29 +75,32 @@ function ChartData({ children, ...data }: ChartDataProps) {
 
 	// Add the functions to the context, along with the passed data
 
-	const contextData: ChartContextContent = useMemo(() => ({
-		...data,
-		getXPositionFromDate,
-		getXPositionFromDaysSinceStart,
-		getXPositionFromYmd,
-		getYBottomPosition,
-		getYPosition,
-		unitHeight,
-		unitWidth
-	}), [
-		data,
-		getXPositionFromDate,
-		getXPositionFromDaysSinceStart,
-		getXPositionFromYmd,
-		getYBottomPosition,
-		getYPosition,
-		unitHeight,
-		unitWidth
-	]);
+	const contextData: ChartContextContent = useMemo(
+		() => ({
+			...data,
+			getXPositionFromDate,
+			getXPositionFromDaysSinceStart,
+			getXPositionFromYmd,
+			getYBottomPosition,
+			getYPosition,
+			unitHeight,
+			unitWidth
+		}),
+		[
+			data,
+			getXPositionFromDate,
+			getXPositionFromDaysSinceStart,
+			getXPositionFromYmd,
+			getYBottomPosition,
+			getYPosition,
+			unitHeight,
+			unitWidth
+		]
+	);
 
 	return (
 		<ChartContext.Provider value={contextData}>
-			{ children }
+			{children}
 		</ChartContext.Provider>
 	);
 }

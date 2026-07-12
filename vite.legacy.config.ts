@@ -35,7 +35,9 @@ function craCompatOutput(): Plugin {
 			}
 
 			if (!jsFile || !cssFile) {
-				this.error("Expected the legacy build to contain one JS entry and one CSS file");
+				this.error(
+					"Expected the legacy build to contain one JS entry and one CSS file"
+				);
 			}
 
 			const files: Record<string, string> = {
@@ -70,7 +72,7 @@ function craCompatOutput(): Plugin {
 				.replace(
 					"</head>",
 					`\t<script defer="defer" src="/${jsFile}"></script>\n` +
-					`\t\t<link href="/${cssFile}" rel="stylesheet" />\n\t</head>`
+						`\t\t<link href="/${cssFile}" rel="stylesheet" />\n\t</head>`
 				);
 
 			this.emitFile({
@@ -88,9 +90,10 @@ export default defineConfig(({ command }) => ({
 	},
 	// React's CJS build branches on process.env.NODE_ENV, which does not exist
 	// in the browser; bake in the production build
-	define: command === "build"
-		? { "process.env.NODE_ENV": JSON.stringify("production") }
-		: {},
+	define:
+		command === "build"
+			? { "process.env.NODE_ENV": JSON.stringify("production") }
+			: {},
 	build: {
 		outDir: "build",
 		sourcemap: true,

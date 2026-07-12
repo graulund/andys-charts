@@ -6,6 +6,7 @@ import { ChartConfig } from "../lib/config";
  * Data supplied to the context from the main chart component
  */
 export interface ChartContextData {
+	clipPathId: string;
 	config: ChartConfig;
 	firstDate: string;
 	lastDate: string;
@@ -14,11 +15,12 @@ export interface ChartContextData {
 	minValue: number;
 	maxValue: number;
 	highlightedIndex: number | undefined;
+	highlightedX: number | null;
 	highlightedValueKey: string | null;
-	scrollLeft: number;
+	scrollContainerRef: React.MutableRefObject<HTMLDivElement | null>;
 	setHighlightedIndex: (value: number | undefined) => void;
+	setHighlightedX: (value: number | null) => void;
 	setHighlightedValueKey: (value: string | null) => void;
-	setScrollLeft: (value: number) => void;
 	totalDays: number;
 }
 

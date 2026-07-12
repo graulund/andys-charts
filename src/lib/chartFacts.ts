@@ -1,13 +1,9 @@
 import { ChartConfig } from "./config";
 import { filterDataSets, padChartDataPointLists } from "./chartData";
 import { getAllValues } from "./pointValues";
-import { dateFromYmd, daysBetweenDates } from "./time";
+import { dateFromYmd, daysBetweenDates, ymdFromDate } from "./time";
 
-import {
-	ChartDataPoint,
-	ChartDataPointValues,
-	ChartDataSet,
-} from "./types";
+import { ChartDataPoint, ChartDataPointValues, ChartDataSet } from "./types";
 
 interface ChartFacts {
 	dataSets: ChartDataSet[];
@@ -16,7 +12,7 @@ interface ChartFacts {
 	lastDate: string;
 	maxValue: number;
 	totalDays: number;
-	values: ChartDataPointValues[]
+	values: ChartDataPointValues[];
 }
 
 /** Find the maximum play value in a list of data points */
@@ -42,17 +38,30 @@ export default function getChartFacts(
 	config: ChartConfig
 ): ChartFacts {
 	const { minMaxPlays, minValues } = config;
+	const normalizedDataSets = (givenDataSets || []).map((dataSet) => ({
+		...dataSet,
+		dataPoints: (dataSet.dataPoints || [])
+			.filter(({ date, plays }) => {
+				const parsedDate = dateFromYmd(date);
+				return (
+					Number.isFinite(plays) &&
+					Number.isFinite(parsedDate.getTime()) &&
+					ymdFromDate(parsedDate) === date
+				);
+			})
+			.map(({ date, plays }) => ({ date, plays: Math.max(0, plays) }))
+	}));
 
 	// Pad and limit data
 
 	const paddedLists = padChartDataPointLists(
-		(givenDataSets || []).map(({ dataPoints }) => dataPoints),
+		normalizedDataSets.map(({ dataPoints }) => dataPoints),
 		config
 	);
 
 	// Filter data
 
-	const dataSets = filterDataSets(givenDataSets, paddedLists, minValues);
+	const dataSets = filterDataSets(normalizedDataSets, paddedLists, minValues);
 	const dataPointLists = dataSets.map(({ dataPoints }) => dataPoints);
 
 	// Get scope of data
@@ -68,7 +77,7 @@ export default function getChartFacts(
 	if (firstDate && lastDate) {
 		const start = dateFromYmd(firstDate);
 		const end = dateFromYmd(lastDate);
-		totalDays = daysBetweenDates(start, end);
+		totalDays = Math.max(1, daysBetweenDates(start, end));
 	}
 
 	return {

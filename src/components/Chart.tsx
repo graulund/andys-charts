@@ -1,25 +1,30 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 
 import { ChartContextData } from "./ChartContext";
 import ChartData from "./ChartData";
-import ChartDataMask from "./ChartDataMask";
+import ChartDataClip from "./ChartDataClip";
 import ChartDataPoints from "./ChartDataPoints";
 import ChartHighlightInfo from "./ChartHighlightInfo";
 import ChartHighlightMarker from "./ChartHighlightMarker";
+import ChartInteractionLayer from "./ChartInteractionLayer";
 import ChartLegend from "./ChartLegend";
 import ChartScrollContainer from "./ChartScrollContainer";
 import ChartTimeAxis from "./ChartTimeAxis";
 import ChartValueAxis from "./ChartValueAxis";
-import ChartValueZones from "./ChartValueZones";
 
 import getChartFacts from "../lib/chartFacts";
 import { ChartConfig, defaultConfig } from "../lib/config";
 import { getHighlightedValue } from "../lib/pointValues";
-import { ChartDataPointTitles, ChartDataSet, ChartLegendTrackItem } from "../lib/types";
+import {
+	ChartDataPointTitles,
+	ChartDataSet,
+	ChartLegendTrackItem
+} from "../lib/types";
 
 import styles from "./Chart.module.css";
 
 export interface ChartProps {
+	ariaLabel?: string;
 	config?: Partial<ChartConfig> | null;
 	dataSets: ChartDataSet[];
 }
@@ -28,25 +33,32 @@ export interface ChartProps {
  * Main chart component: Takes a partial config and non-compressed data sets as props
  */
 function Chart({
+	ariaLabel = "Line chart",
 	config: givenConfig,
 	dataSets: givenDataSets
 }: ChartProps) {
-	const [highlightedValueKey, setHighlightedValueKey] = useState<string | null>(null);
-	const [highlightedIndex, setHighlightedIndex] = useState<number | undefined>(undefined);
-	const [scrollLeft, setScrollLeft] = useState(0);
+	const clipPathId = `andy-chart-data-clip-${useId().replace(/:/g, "")}`;
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const [highlightedValueKey, setHighlightedValueKey] = useState<
+		string | null
+	>(null);
+	const [highlightedIndex, setHighlightedIndex] = useState<
+		number | undefined
+	>(undefined);
+	const [highlightedX, setHighlightedX] = useState<number | null>(null);
 
 	const config: ChartConfig = useMemo(
-		() => ({ ...defaultConfig, ...(givenConfig || {}) }), [givenConfig]
+		() => ({ ...defaultConfig, ...(givenConfig || {}) }),
+		[givenConfig]
 	);
 
 	const {
-		backgroundColor,
 		chartBottomHeight,
 		chartHeight,
 		chartLeftWidth,
 		chartTopHeight,
 		chartWidth,
-		colors,
+		colors: configuredColors,
 		fillOpacity,
 		singleColor,
 		singleFillOpacity
@@ -56,6 +68,9 @@ function Chart({
 
 	const mainAreaWidth = chartWidth - chartLeftWidth;
 	const mainAreaHeight = chartHeight - chartTopHeight - chartBottomHeight;
+	const colors = configuredColors.length
+		? configuredColors
+		: defaultConfig.colors;
 
 	const {
 		dataSets,
@@ -65,40 +80,50 @@ function Chart({
 		maxValue,
 		totalDays,
 		values
-	} = useMemo(() => getChartFacts(givenDataSets, config), [config, givenDataSets]);
+	} = useMemo(
+		() => getChartFacts(givenDataSets, config),
+		[config, givenDataSets]
+	);
 
 	// Data for context
 
-	const chartData: ChartContextData = useMemo(() => ({
-		config,
-		firstDate,
-		lastDate,
-		mainAreaHeight,
-		mainAreaWidth,
-		minValue: 0,
-		maxValue,
-		highlightedIndex,
-		highlightedValueKey,
-		scrollLeft,
-		setHighlightedIndex,
-		setHighlightedValueKey,
-		setScrollLeft,
-		totalDays
-	}), [
-		config,
-		firstDate,
-		lastDate,
-		mainAreaHeight,
-		mainAreaWidth,
-		maxValue,
-		highlightedIndex,
-		highlightedValueKey,
-		scrollLeft,
-		setHighlightedIndex,
-		setHighlightedValueKey,
-		setScrollLeft,
-		totalDays
-	]);
+	const chartData: ChartContextData = useMemo(
+		() => ({
+			clipPathId,
+			config,
+			firstDate,
+			lastDate,
+			mainAreaHeight,
+			mainAreaWidth,
+			minValue: 0,
+			maxValue,
+			highlightedIndex,
+			highlightedX,
+			highlightedValueKey,
+			scrollContainerRef,
+			setHighlightedIndex,
+			setHighlightedX,
+			setHighlightedValueKey,
+			totalDays
+		}),
+		[
+			clipPathId,
+			config,
+			firstDate,
+			lastDate,
+			mainAreaHeight,
+			mainAreaWidth,
+			maxValue,
+			highlightedIndex,
+			highlightedX,
+			highlightedValueKey,
+			scrollContainerRef,
+			setHighlightedIndex,
+			setHighlightedX,
+			setHighlightedValueKey,
+			totalDays
+		]
+	);
 
 	// Highlighted value (from moving mouse over data points)
 
@@ -110,7 +135,7 @@ function Chart({
 
 	// Abort if there's no data
 
-	if (!firstDate || !lastDate) {
+	if (!firstDate || !lastDate || mainAreaWidth <= 0 || mainAreaHeight <= 0) {
 		return null;
 	}
 
@@ -132,54 +157,62 @@ function Chart({
 
 	displayData.reverse();
 
-	const legendList: ChartLegendTrackItem[] = dataSets.map(({ artists, title, url }, i) => ({
-		artists,
-		color: hasSingleItem ? singleColor : colors[i % colors.length],
-		index: i,
-		title,
-		url
-	}));
+	const legendList: ChartLegendTrackItem[] = dataSets.map(
+		({ artists, title, url }, i) => ({
+			artists,
+			color: hasSingleItem ? singleColor : colors[i % colors.length],
+			index: i,
+			title,
+			url
+		})
+	);
 
 	const fillOpacityValue = hasSingleItem ? singleFillOpacity : fillOpacity;
 
 	return (
-		<div className={styles.chart} aria-label="Line chart">
+		<div className={styles.chart} role="group" aria-label={ariaLabel}>
 			<ChartData {...chartData}>
 				<div className={styles.main}>
-					<ChartScrollContainer>
-						<div className={styles.inner}>
-							<svg
-								className={styles.canvas}
-								viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-								style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}
-							>
-								<ChartDataMask />
-								<ChartTimeAxis />
-								{ displayData.map(({ color, dataPoints, index }) => (
-									<ChartDataPoints
-										dataPoints={dataPoints}
-										color={color}
-										fillOpacity={fillOpacityValue}
-										index={index}
-										key={index}
-									/>
-								)) }
-							</svg>
-							<ChartValueZones values={values} />
-							<ChartHighlightMarker value={highlightedValue} />
-						</div>
-					</ChartScrollContainer>
 					<svg
+						aria-hidden="true"
 						className={styles.valueAxis}
 						viewBox={`0 0 ${chartLeftWidth} ${chartHeight}`}
 						style={{
-							backgroundColor,
 							width: `${chartLeftWidth}px`,
 							height: `${chartHeight}px`
 						}}
 					>
 						<ChartValueAxis />
 					</svg>
+					<ChartScrollContainer>
+						<div className={styles.inner}>
+							<svg
+								aria-hidden="true"
+								className={styles.canvas}
+								viewBox={`0 0 ${mainAreaWidth} ${chartHeight}`}
+								style={{
+									width: `${mainAreaWidth}px`,
+									height: `${chartHeight}px`
+								}}
+							>
+								<ChartDataClip />
+								<ChartTimeAxis />
+								{displayData.map(
+									({ color, dataPoints, index }) => (
+										<ChartDataPoints
+											dataPoints={dataPoints}
+											color={color}
+											fillOpacity={fillOpacityValue}
+											index={index}
+											key={index}
+										/>
+									)
+								)}
+							</svg>
+							<ChartInteractionLayer values={values} />
+							<ChartHighlightMarker value={highlightedValue} />
+						</div>
+					</ChartScrollContainer>
 					<ChartHighlightInfo value={highlightedValue} />
 				</div>
 				<ChartLegend tracks={legendList} />

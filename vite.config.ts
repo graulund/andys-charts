@@ -1,6 +1,29 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import dts from "vite-plugin-dts";
+
+/** Keeps a standalone copy while the compatibility injector consumes the original CSS. */
+function standaloneCss(): Plugin {
+	return {
+		name: "andys-charts-standalone-css",
+		apply: "build",
+		enforce: "post",
+		generateBundle(_options, bundle) {
+			const css = Object.values(bundle).find(
+				(asset) =>
+					asset.type === "asset" && asset.fileName.endsWith(".css")
+			);
+
+			if (css?.type === "asset") {
+				this.emitFile({
+					type: "asset",
+					fileName: "style.css",
+					source: css.source
+				});
+			}
+		}
+	};
+}
 
 // Library build: ESM module with type declarations, for npm consumers.
 // Component styles (CSS modules) are compiled into the JS bundle and injected
@@ -15,22 +38,27 @@ export default defineConfig({
 		lib: {
 			entry: "src/index.ts",
 			formats: ["es"],
-			fileName: "index"
+			fileName: "index",
+			cssFileName: "andys-charts"
 		},
 		rollupOptions: {
-			external: [
-				/^react($|\/)/,
-				/^react-dom($|\/)/,
-				"clsx",
-				"d3-path"
-			]
+			external: [/^react($|\/)/, /^react-dom($|\/)/]
 		}
 	},
 	plugins: [
-		cssInjectedByJsPlugin(),
+		standaloneCss(),
+		cssInjectedByJsPlugin({
+			cssAssetsFilterFunction: ({ fileName }) => fileName !== "style.css"
+		}),
 		dts({
 			include: ["src", "env.d.ts"],
-			exclude: ["src/legacy.tsx", "**/*.stories.tsx", "**/*.test.tsx"]
+			exclude: [
+				"src/legacy.tsx",
+				"src/test/**",
+				"**/*.stories.tsx",
+				"**/*.test.ts",
+				"**/*.test.tsx"
+			]
 		})
 	]
 });

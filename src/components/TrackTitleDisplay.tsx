@@ -1,7 +1,7 @@
 import React from "react";
-import clsx from "clsx";
 
 import { ChartConfig } from "../lib/config";
+import { classNames } from "../lib/classNames";
 import { TrackArtist, TrackArtists } from "../lib/types";
 
 import styles from "./TrackTitleDisplay.module.css";
@@ -44,7 +44,7 @@ interface ArtistNameProps {
 }
 
 function ArtistName({ name }: ArtistNameProps) {
-	return <span className={styles.artist}>{ name }</span>;
+	return <span className={styles.artist}>{name}</span>;
 }
 
 ArtistName.displayName = "TrackTitleDisplay.ArtistName";
@@ -56,9 +56,11 @@ interface ArtistListProps {
 function ArtistList({ artists }: ArtistListProps) {
 	return (
 		<>
-			{ renderList(artists.map(({ id, name }, i) => (
-				<ArtistName name={name} key={id || i} />
-			))) }
+			{renderList(
+				artists.map(({ id, name }, i) => (
+					<ArtistName name={name} key={id || i} />
+				))
+			)}
 		</>
 	);
 }
@@ -90,12 +92,12 @@ function TrackTitleDisplay({
 		prefix = (
 			<>
 				<ArtistList artists={artists.main} />
-				{ artists.feat ? (
+				{artists.feat ? (
 					<>
-						{ " featuring " }
+						{" featuring "}
 						<ArtistList artists={artists.feat} />
 					</>
-				) : null }
+				) : null}
 				{" – "}
 			</>
 		);
@@ -104,56 +106,56 @@ function TrackTitleDisplay({
 	const suffix = [];
 
 	if (artists?.as) {
-		suffix.push((
+		suffix.push(
 			<>
-				{ `${asText(language)} ` }
+				{`${asText(language)} `}
 				<ArtistName name={artists.as.name} />
 			</>
-		));
+		);
 	}
 
 	if (artists?.with) {
-		suffix.push((
+		suffix.push(
 			<>
-				{ `${withText(language)} ` }
+				{`${withText(language)} `}
 				<ArtistList artists={artists.with} />
 			</>
-		));
+		);
 	}
 
 	if (artists?.feat && !artists.main) {
-		suffix.push((
+		suffix.push(
 			<>
-				{ "featuring " }
+				{"featuring "}
 				<ArtistList artists={artists.feat} />
 			</>
-		));
+		);
 	}
 
-	const containerClassName = clsx({ [styles.darkContainer]: dark });
+	const containerClassName = classNames(dark && styles.darkContainer);
 
-	const titleClassName = clsx(styles.main, mainClassName, {
-		[styles.darkMain]: dark
-	});
+	const titleClassName = classNames(
+		styles.main,
+		mainClassName,
+		dark && styles.darkMain
+	);
 
 	return (
 		<span className={containerClassName}>
-			{ prefix }
-			<span className={titleClassName}>
-				{ title }
-			</span>
-			{ suffix.length > 0 ? (
+			{prefix}
+			<span className={titleClassName}>{title}</span>
+			{suffix.length > 0 ? (
 				<>
 					{" ("}
-					{ suffix.map((el, i) => (
+					{suffix.map((el, i) => (
 						<React.Fragment key={i}>
-							{ i > 0 ? " " : null }
-							{ el }
+							{i > 0 ? " " : null}
+							{el}
 						</React.Fragment>
-					)) }
+					))}
 					{")"}
 				</>
-			) : null }
+			) : null}
 		</span>
 	);
 }

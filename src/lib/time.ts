@@ -90,9 +90,11 @@ export function ymdFromDate(date: string | Date) {
  * @returns Month string in `YYYY-MM` format
  */
 export function ymFromDate(date: string | Date) {
-	// Gets you yyyy-mm
-	const dateString = typeof date === "string" ? date : date.toISOString();
-	return dateString.slice(0, 7);
+	if (typeof date === "string") {
+		return date.slice(0, 7);
+	}
+
+	return `${date.getFullYear()}-${pad(1 + date.getMonth())}`;
 }
 
 /**
@@ -135,7 +137,11 @@ function getDateFromTime(time: number | Date) {
  * if `false`
  * @returns `Date` object
  */
-export function offsetDate(time: number | Date, daysOffset: number, includeHours = false) {
+export function offsetDate(
+	time: number | Date,
+	daysOffset: number,
+	includeHours = false
+) {
 	const date = getDateFromTime(time);
 
 	if (!includeHours) {
@@ -187,7 +193,17 @@ export function prevDay(time: number | Date, includeHours = false) {
  * @returns Rounded number of days
  */
 export function daysBetweenDates(startDate: Date, endDate: Date) {
-	const msDiff = Math.abs(endDate.getTime() - startDate.getTime());
+	const startTime = Date.UTC(
+		startDate.getFullYear(),
+		startDate.getMonth(),
+		startDate.getDate()
+	);
+	const endTime = Date.UTC(
+		endDate.getFullYear(),
+		endDate.getMonth(),
+		endDate.getDate()
+	);
+	const msDiff = Math.abs(endTime - startTime);
 	return Math.round(msDiff / 86400000);
 }
 
@@ -256,7 +272,7 @@ export function formatYearMonth(
 	// `small`: short month names, followed by year if different from prev year
 	// `tiny`: year if different from prev year, otherwise short month names
 
-	let monthNamesList = null;
+	let monthNamesList: string[];
 
 	switch (language) {
 		case "da":
@@ -303,7 +319,10 @@ export function formatYearMonth(
  * @param language Danish (`da`) or English (`en`)
  * @returns A formatted string
  */
-export function formatDate(date: Date, language: ChartConfig["language"] = "en") {
+export function formatDate(
+	date: Date,
+	language: ChartConfig["language"] = "en"
+) {
 	const day = date.getDate();
 	const month = date.getMonth();
 	const year = date.getFullYear();

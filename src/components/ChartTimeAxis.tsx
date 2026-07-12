@@ -1,8 +1,13 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import clsx from "clsx";
-import { path } from "d3-path";
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState
+} from "react";
 
 import ChartContext, { ChartContextContent } from "./ChartContext";
+import { classNames } from "../lib/classNames";
 
 import {
 	dateFromYmd,
@@ -10,6 +15,7 @@ import {
 	getAllMonthsBetweenDates,
 	YearMonthFormattingStyle
 } from "../lib/time";
+import { createSvgPath } from "../lib/svgPath";
 
 import styles from "./ChartAxes.module.css";
 
@@ -30,17 +36,12 @@ function ChartTimeAxis() {
 		mainAreaHeight
 	} = useContext(ChartContext) as ChartContextContent;
 
-	const {
-		chartLeftWidth: offsetLeft,
-		chartTopHeight: offsetTop,
-		dark,
-		language
-	} = config;
+	const { chartTopHeight: offsetTop, dark, language } = config;
 
 	// Horizontal axis line
-	const axisPath = path();
-	axisPath.moveTo(offsetLeft, offsetTop + mainAreaHeight);
-	axisPath.lineTo(offsetLeft + mainAreaWidth, offsetTop + mainAreaHeight);
+	const axisPath = createSvgPath();
+	axisPath.moveTo(0, offsetTop + mainAreaHeight);
+	axisPath.lineTo(mainAreaWidth, offsetTop + mainAreaHeight);
 
 	const start = dateFromYmd(firstDate);
 	const months = getAllMonthsBetweenDates(firstDate, lastDate);
@@ -58,9 +59,9 @@ function ChartTimeAxis() {
 
 	const calculateTickPos = useCallback(
 		(ymd: string) => {
-			const monthDate = new Date(Math.max(
-				start.getTime(), dateFromYmd(ymd).getTime()
-			));
+			const monthDate = new Date(
+				Math.max(start.getTime(), dateFromYmd(ymd).getTime())
+			);
 
 			return getXPositionFromDate(monthDate);
 		},
@@ -88,45 +89,57 @@ function ChartTimeAxis() {
 		setHideFirstLabel(actualWidth >= spaceWidth + tickTextMinRightPadding);
 	}, [calculateTickPos, firstLabelEl, months]);
 
-	const lineClassName = clsx(styles.axisLine, {
-		[styles.darkAxisLine]: dark
-	});
+	const lineClassName = classNames(
+		styles.axisLine,
+		dark && styles.darkAxisLine
+	);
 
 	return (
 		<>
 			<path className={lineClassName} d={axisPath.toString()} />
-			{ months.map(({ year, month, ymd }, index) => {
+			{months.map(({ year, month, ymd }, index) => {
 				// Render each tick, and tick value
 				const tickPos = calculateTickPos(ymd);
-				const tickPath = path();
+				const tickPath = createSvgPath();
 				tickPath.moveTo(tickPos, offsetTop);
 				tickPath.lineTo(tickPos, offsetTop + mainAreaHeight);
 
-				const prevMonth = index > 1 || !hideFirstLabel ? months[index - 1] : undefined;
+				const prevMonth =
+					index > 1 || !hideFirstLabel
+						? months[index - 1]
+						: undefined;
 
 				const label = formatYearMonth(
-					year, month, prevMonth?.year || 0, language, monthFormatStyle
+					year,
+					month,
+					prevMonth?.year || 0,
+					language,
+					monthFormatStyle
 				);
 
-				const labelClassName = clsx(styles.axisLabel, {
-					[styles.darkAxisLabel]: dark,
-					[styles.hiddenLabel]: index === 0 && hideFirstLabel
-				});
+				const labelClassName = classNames(
+					styles.axisLabel,
+					dark && styles.darkAxisLabel,
+					index === 0 && hideFirstLabel && styles.hiddenLabel
+				);
 
 				return (
 					<React.Fragment key={ymd}>
-						<path className={lineClassName} d={tickPath.toString()} />
+						<path
+							className={lineClassName}
+							d={tickPath.toString()}
+						/>
 						<text
 							className={labelClassName}
 							x={tickPos}
 							y={offsetTop + mainAreaHeight + tickTextOffsetTop}
 							ref={index === 0 ? firstLabelEl : undefined}
 						>
-							{ label }
+							{label}
 						</text>
 					</React.Fragment>
 				);
-			}) }
+			})}
 		</>
 	);
 }

@@ -4,7 +4,7 @@
 	height: 10px;
 	margin-left: -5px;
 	margin-top: -5px;
-	background-color: #111;
+	background-color: var(--andys-charts-marker, #111);
 	border-radius: 99px;
 	pointer-events: none;
 }
@@ -14,5 +14,5 @@
 }
 
 .darkMarker {
-	background-color: #fff;
+	background-color: var(--andys-charts-marker-dark, #fff);
 }
